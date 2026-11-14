@@ -1,0 +1,34 @@
+{
+  "runtime": {
+    "packages": {
+      "mlx": "0.32.4",
+      "mlx-metal": "0.32.4",
+      "mlx-lm": "0.32.2",
+      "transformers": "5.10.1",
+      "numpy": "2.4.3"
+    },
+    "python": "3.13.3",
+    "architecture": "arm64",
+    "macos": "26.6.2",
+    "kernel": "25.6.0"
+  },
+  "reasoning_end": 151644,
+  "answer_header": [
+    151644,
+    9217,
+    198
+  ],
+  "newline": [
+    198
+  ],
+  "wait": [
+    198,
+    14190
+  ],
+  "think_prefix": [
+    151644,
+    26865,
+    198
+  ],
+  "decoded_wait": "\nWait"
+}

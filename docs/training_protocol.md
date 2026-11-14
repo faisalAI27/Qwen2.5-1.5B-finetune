@@ -33,3 +33,7 @@ caffeinate -i .venv-mlx/bin/python scripts/run_development.py --prefix local-stu
 The orchestrator runs/resumes each declared trial, verifies it in a fresh process, selects by complete development loss, freezes training settings, then starts and verifies fresh final training. Repeating the same command retains completed verified runs and resumes incomplete ones. It never opens MATH-500. Per-example progress is printed during computation; raw records and attempts are under `results/training/`, adapters/checkpoints under `artifacts/training/`.
 
 Use the provided loader for all inference: the adapter is **MLX format** and depends on the identical converted base and **FP32 activation wrapper**. A generic BF16 MLX load or a PEFT loader does not reproduce this recipe. No merge/interchangeability claim is made. Source and conversion provenance are packaged beside the adapter; hardware measurements must accompany final results.
+
+## Held-out inference-protocol development
+
+Budget/marker/answer-allowance decisions use the **selected 896-row development adapter**, whose 100 development rows remain held out. The final 996-row adapter is used for the frozen benchmark only. Training settings freeze before fresh final retraining; inference settings freeze separately before test, using the development adapter even if final training has already finished. This preserves the information boundary without relying on a development set that the final adapter has seen. Final-adapter technical reload checks do not choose settings or calculate accuracy.

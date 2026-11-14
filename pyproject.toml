@@ -15,6 +15,8 @@ data = ["transformers==5.10.1", "pyarrow==22.0.0", "PyYAML==6.0.2", "Jinja2==3.1
 inference = ["torch==2.9.1"]
 training = ["peft==0.21.3", "accelerate==1.13.0", "psutil==7.2.2"]
 mac-training = ["mlx==0.32.4", "mlx-lm==0.32.2", "sentencepiece==0.2.3"]
+grading = ["math-verify==0.9.0", "latex2sympy2_extended==1.11.0", "antlr4-python3-runtime==4.13.2", "sympy==1.14.0"]
+reporting = ["matplotlib==3.10.6", "Pillow==11.2.1"]
 
 [project.scripts]
 s1small-check = "s1small.environment:main"

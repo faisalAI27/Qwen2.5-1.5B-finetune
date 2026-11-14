@@ -6,7 +6,7 @@ Specification: [`NLP_Proposal.pdf`](NLP_Proposal.pdf). Roadmap and progress: [`p
 
 ## Current status
 
-Stages 1–5 are complete: setup/source pins, data/split/leakage audit, actual base-model generation and exhaustive training-format/mask validation. The pinned original model, s1K and tokenizer assets are downloaded and verified. Stable local QLoRA training and complete 9,109-token backward feasibility are verified; Stage 6 resumable development training is prepared and its complete workflow smoke passes. No benchmark evaluation has run.
+Stages 1–5 are complete: setup/source pins, data/split/leakage audit, actual base-model generation, exhaustive training-format/mask validation and stable local QLoRA feasibility. **Stage 6 full training is running.** Stages 7–10 have tested implementations and are queued behind training and native development validation. No benchmark evaluation has run and there are no final accuracy scores yet. Read live progress with `python3 scripts/status.py`; the continuation controller records its stage in `results/runtime/project_pipeline.json`.
 
 The raw split is 900 train / 100 development (seed 42). Four confirmed benchmark-overlap examples are excluded through a separate eligibility manifest, leaving 896 train / 100 development and 996 eventual final-training examples before context filtering. See [`docs/data_audit.md`](docs/data_audit.md). All downstream training/development scripts must use `manifests/s1k_eligibility.json`, not all raw rows.
 
@@ -14,7 +14,9 @@ The target computer is an Apple M1 MacBook Air with 8 GB unified memory and a 7-
 
 Stage 3 completed 28/28 generations, with exact token-ID repeats within each run and across fresh model loads. The main development test used five questions, A/B prompts and two repetitions; unfinished answers are explicitly marked. No accuracy claim is made. See [`docs/stage3_report.md`](docs/stage3_report.md).
 
-Stage 4 formatting/masking checks passed for all 996 eligible examples; the ordinary suite ran 68 tests (four native tests skipped and passed separately on the GPU). Complete examples are preserved without truncation; the full training context allowance remains subject to measured feasibility. See [`docs/training_format_audit.md`](docs/training_format_audit.md).
+Stage 4 formatting/masking checks passed for all 996 eligible examples. Complete examples are preserved without truncation; measured full-length feasibility supports the 9,216-token training ceiling. The latest grader-environment suite ran 106 tests successfully (five native GPU tests and one optional PEFT test skipped). The PEFT check passes in the inference environment; the five native tests passed before full training. See [`docs/training_format_audit.md`](docs/training_format_audit.md).
+
+The remaining workflow is documented in [`docs/budget_protocol.md`](docs/budget_protocol.md), [`docs/evaluation_protocol.md`](docs/evaluation_protocol.md) and [`docs/reproducibility.md`](docs/reproducibility.md). The final paper writer includes hardware specifications and measured runtime at the end of `docs/paper.md`, after actual results exist. It labels incomplete studies explicitly.
 
 ## Minimal setup
 
@@ -27,7 +29,7 @@ python3 -m venv .venv
 .venv/bin/python scripts/check_environment.py --output results/environment/stage1-isolated.json
 ```
 
-The editable install may fetch the setuptools build requirement. The base package has no runtime dependencies. The optional data extra adds the tested tokenizer/Parquet/template stack without Torch. Training dependencies will be chosen later; do not install the original multi-GPU requirements.
+The editable install may fetch the setuptools build requirement. The base package has no runtime dependencies. The optional data extra adds the tested tokenizer/Parquet/template stack without Torch. Separate validated training, MLX, grading and reporting locks are now available; do not install the original multi-GPU requirements.
 
 You can also run checks without installing this package:
 
@@ -48,7 +50,7 @@ The command-line entry point `s1small-check` is available after installation. Al
 - Recorded design choices: [`docs/decisions.md`](docs/decisions.md).
 - Save local data in `data/`, weights/adapters in `artifacts/`, and raw runs in `results/`; these locations are ignored by Git. Export small reviewed summaries into documentation later.
 - Never commit credentials, Hub caches, weights or large raw runs. The environment checker filters Apple serial numbers and UUIDs from its saved report.
-- Save run configuration hashes, package versions, actual hardware, source revisions and Git commit for each experiment. No Git commit exists until the first local commit is made; the checker reports null explicitly.
+- Save run configuration hashes, package versions, actual hardware, source revisions and Git commit for each experiment. Initial reports predate the first local commit and report null explicitly; later runs record the actual commit and code hashes.
 
 The Stage 2 isolated environment snapshot recorded approximately 15 GiB free. Recheck before downloads; 30-40 GiB free is a suggested working allowance, not a validated requirement. Free disk does not increase the 8 GB unified memory.
 
@@ -71,9 +73,9 @@ Current: Stage 6 resumable development/final training on the measured MLX QLoRA 
 
 The acquisition command needs network access on first use. It downloads only pinned s1K and tokenizer files; MATH-500 JSONL is streamed and only IDs/questions are saved, with other fields discarded. It does not download model weights. Subsequent verification can use `scripts/prepare_data.py --offline`. Changed existing manifests or length outputs fail rather than overwrite. `report_data_audit.py` regenerates the derived Markdown/summary export from saved audit files.
 
-The validated Stage 2 runtime snapshot is [`requirements-data-lock.txt`](requirements-data-lock.txt). On the same platform/interpreter family, install it with `.venv/bin/python -m pip install -r requirements-data-lock.txt`. It covers data/tokenizer workflows only; training dependencies remain to be validated. Actual commands and checks are in [`docs/stage2_report.md`](docs/stage2_report.md).
+The validated Stage 2 runtime snapshot is [`requirements-data-lock.txt`](requirements-data-lock.txt). On the same platform/interpreter family, install it with `.venv/bin/python -m pip install -r requirements-data-lock.txt`. It covers data/tokenizer workflows only; use the separate MLX lock for the accepted training path. Actual commands and checks are in [`docs/stage2_report.md`](docs/stage2_report.md).
 
-No examples have been truncated or excluded for length. All 1,000 complete examples range from 712 to 9,109 tokens; 988 fit in 8,192. This does not prove training fits in 8 GB memory. The corpus has one normalized duplicate question pair, both in training, retained as original rows and disclosed in the data audit.
+No examples have been truncated or excluded for length. All 1,000 complete examples range from 712 to 9,109 tokens; 988 fit in 8,192. Complete backward feasibility was subsequently measured in Stage 5. The corpus has one normalized duplicate question pair, both in training, retained as original rows and disclosed in the data audit.
 
 ## Stage 3 commands (model verification passed)
 
@@ -93,3 +95,17 @@ For a fully isolated environment instead of shared system packages, install `.[d
 ## Research reference and release status
 
 Muennighoff et al. (2025), [s1: Simple test-time scaling, original paper version](https://arxiv.org/abs/2501.19393v1), and the [official implementation](https://github.com/simplescaling/s1). This study changes model size, training method and hardware. Dataset/model/code license and redistribution checks remain required before a public release; no project release license is selected here.
+
+## Full local training and progress
+
+The predeclared full workflow is running with `caffeinate -i .venv-mlx/bin/python scripts/run_development.py --prefix local-study-v1`. It checkpoints every update, keeps the last two checkpoints per run, selects from two full learning-rate trials using all 100 held-out development targets, and then retrains a fresh final adapter on 996 rows. Read [`docs/training_protocol.md`](docs/training_protocol.md) before changing settings. The full runs take many hours; pilot success is not a final result.
+
+A detached `complete_project.py` controller is active and waits for that existing training parent. It then executes held-out protocol validation, pre-test freeze, the complete nine-condition evaluation, grading, analysis and local paper/demo handoff. It logs to `results/runtime/project_pipeline.log` and halts with evidence on a failed gate. Keep the Mac plugged in and awake with the lid open. The workflow is not a reboot service; recovery instructions are in [`docs/reproducibility.md`](docs/reproducibility.md).
+
+Read durable progress without loading a model:
+
+```bash
+python3 scripts/status.py
+```
+
+The tested source checkpoint before these full runs is local Git commit `f1b0f4e78af13337a54350d8eeeb81f2643991f2`. Older setup/smoke records predate that commit and retain their recorded code hashes/null commit.

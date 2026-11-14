@@ -35,14 +35,14 @@ The MPS working-set value is a runtime recommendation, not dedicated VRAM or an 
 - Allocated a four-element tensor on MPS, added it to itself, and copied the result to CPU. Observed `[2.0, 2.0, 2.0, 2.0]`.
 - Read `torch.mps.recommended_max_memory()` outside the sandbox.
 
-These initial checks did not load a model. Subsequent actual model and training-profile measurements are recorded below. Swap usage could not be read under the sandbox and is not reported.
+These initial checks did not load a model. Subsequent actual model and training-profile measurements are recorded below. Swap was unavailable under the initial sandbox; a later native snapshot is documented at the end.
 
 ## Implications for the study
 
 1. Local code, unit tests, data inspection, analysis and report preparation can proceed on this computer. Model inference and training require staged feasibility checks.
 2. The earlier provisional 16-24 GB GPU assumption does not describe this machine. CPU and GPU share the same 8 GB memory pool with the operating system and other apps.
-3. Long-context LoRA training on the complete original s1K set remains unverified. The first standard-loss training profile exhausted the configured memory limit even at 712 tokens; see the Stage 5 observations below. Do not claim the full experiment fits from inference success.
-4. PyTorch MPS is available. MLX-LM is an alternative to investigate if needed: its official documentation supports Apple-silicon generation and low-rank fine-tuning of quantized models. It is not installed or validated here. Switching frameworks, quantizing weights, or changing eligible examples must be documented as a methodological decision.
+3. Complete 9,109-token backward feasibility and a stable 20-row training pilot are verified on the accepted MLX path. The entire full-data experiment remains in progress. Earlier PyTorch failures remain part of the evidence; inference or pilot success alone does not establish a completed study.
+4. PyTorch MPS is available. MLX 0.32.4 / MLX-LM 0.32.2 are now installed in the separate project environment and validated for the source-traced QLoRA/FP32 path. The backend and quantization change is documented in `hardware_pilot.md` and `mac_training_backend_audit.md`.
 5. Keep the planned Qwen2.5-1.5B-Instruct identity. If quantization is necessary, trace the conversion to a pinned source revision and use matching precision/quantization for comparable base and adapted conditions.
 6. Approximately 16 GiB of free storage was reported at the Stage 5 recheck. A suggested working target is 30-40 GiB free for the environment, model/cache files, checkpoints and operating-system headroom; this is a planning allowance, not a measured requirement or guarantee. Calculate storage needs before downloading; do not delete user files automatically. Additional storage does not increase unified memory.
 7. Test one complete example before increasing workload. Measure peak memory, elapsed time and eligibility at each step. Preserve answer targets and disclose any excluded examples; a short-context pilot does not establish full-context feasibility.
@@ -69,3 +69,6 @@ The first BF16 LoRA standard-loss profile on the complete shortest eligible exam
 
 On 2026-11-15, the accepted path became **MLX QLoRA (4-bit affine, group 64), original-source conversion, FP32 activations/adapters**. The 20-row technical pilot completed five stable updates in 233.666 seconds, 115.426 input tokens/second, with 2,993,071,108 peak active MLX bytes. A fresh process reloaded identical adapter tensors and generation. The complete 9,109-token longest eligible sequence passed backward in 114.517 seconds, with 5,832,500,352 peak active bytes. All 996 eligible examples remain covered, without truncation/context exclusions; training will use a 9,216-token ceiling. See [`hardware_pilot.md`](hardware_pilot.md). These values establish feasibility, not final performance. MLX's memory limit is a guideline that can be exceeded using RAM/swap; active allocator peaks are not dedicated VRAM and overlap with RSS.
 
+## Full-training host recheck (2026-11-15 local date)
+
+`results/environment/stage6-host.json` confirms the M1/8 GB/7-core GPU host, macOS 26.6.2 and CPython 3.13.3; serial numbers are excluded. The native swap snapshot in `results/environment/stage6-swap-snapshot.json` reports 7,168 MiB total and 5,599.56 MiB used. This is a system-wide snapshot including other applications, not training-attributable memory. Approximately 14.8 GiB was free during the continuation check; read current free space with `scripts/status.py`. No additional storage is currently required to start the queued stages, subject to their disk guards and changing system usage. Keep the Mac plugged in and awake for the long local runs.

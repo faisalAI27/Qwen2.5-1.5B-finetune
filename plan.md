@@ -2,11 +2,11 @@
 
 **Project:** Resource-Constrained Adaptation of *s1: Simple test-time scaling*  
 **Team:** Faisal Imran · Muhammad Ibrahim · Hamza Saeed  
-**Planning status:** Stages 1–5 complete; Stage 6 implementation/development training active
+**Planning status:** Stages 1–5 complete; Stage 6 full training active; Stages 7–10 implemented and queued for measured execution
 **Primary specification:** `NLP_Proposal.pdf` (the group's approved project proposal)  
 **Last reviewed:** 2026-11-15
 
-**Hardware constraint (2026-11-14):** The user requires this local computer for the project: Apple M1 MacBook Air, 8 GB unified memory, 7-core GPU. PyTorch MPS passed a small tensor test outside the sandbox. See `docs/hardware.md` for measured specifications and limitations. Remote GPU access is not assumed; training feasibility remains to be measured. Include the actual hardware and runtime measurements in the final report.
+**Hardware constraint (2026-11-14):** The user requires this local computer for the project: Apple M1 MacBook Air, 8 GB unified memory, 7-core GPU. PyTorch MPS passed a small tensor test outside the sandbox. See `docs/hardware.md` for measured specifications and limitations. Remote GPU access is not assumed; full-length backward feasibility and stable local pilot training are verified, while full training/evaluation remain in progress. Include the actual hardware and runtime measurements in the final report.
 
 **Execution instruction update (2026-11-14):** The user repeatedly asked to "go ahead and complete it" during execution. Continue through the remaining project work without requiring another go-ahead after each stage. Keep the scientific and measured hardware acceptance gates, record actual outcomes, and report any genuine blocker. The stage-by-stage stop-for-review wording below is original guidance, superseded by this instruction; it does not require pausing already authorized work. Independent tokenizer/format checks may proceed during a checkpoint-download wait, without claiming model or training success.
 
@@ -275,18 +275,18 @@ The layout is a **target**, not a requirement to create every file in Stage 1. C
 
 ### Stage 6 — Development tuning and final LoRA training
 
-**Status:** [ ] Active: prepare resumable full development trials on the validated local MLX QLoRA path; MATH-500 remains unscored.
+**Status:** [ ] Active: first full 896-row development trial running; two-trial selection and fresh 996-row final training are automated. MATH-500 remains unscored. See `docs/training_protocol.md`.
 
 **Goal:** Choose a stable setup on the **900/100** split, freeze it, and train the final model on all eligible original examples.
 
 **Tasks**
-- [ ] Specify a **small** explicit hyperparameter grid (learning rate, number of epochs/checkpoint) justified by Stage 5 cost.
+- [x] Specify a **small** explicit hyperparameter grid (learning rate, number of epochs/checkpoint) justified by Stage 5 cost.
 - [ ] Tune using training + held-out 100-development examples only; log every trial, seed, and development metric.
 - [ ] Select one configuration using a declared rule (e.g., development loss and/or development answer accuracy); avoid cherry-picking.
 - [ ] Freeze configs, data processing, prompt protocol, stopping settings and evaluation grader before the MATH-500 run.
 - [ ] Reinitialize the **same original base model** (no continuing from the 900-example tuned adapter) and train on the full eligible s1K set with frozen settings.
 - [ ] Save LoRA adapter + tokenizer/config references; verify adapter merge/loading compatibility without silently replacing the base model.
-- [ ] Report final eligible count if any examples were removed due to overlap or context limits.
+- [x] Report final eligible count if any examples were removed due to overlap or context limits.
 
 **Artifacts:** trial table, frozen YAMLs, full adapter, training logs and reproducibility metadata.
 
@@ -294,18 +294,18 @@ The layout is a **target**, not a requirement to create every file in Stage 1. C
 
 ### Stage 7 — Budget-forcing engine and protocol tests
 
-**Status:** [ ] Not started
+**Status:** [ ] Engine and token/state-machine tests implemented; native selected-adapter development validation pending Stage 6. See `docs/budget_protocol.md`.
 
 **Goal:** Implement **genuine structural budget forcing**, not a generic “think longer” prompt.
 
 **Tasks**
-- [ ] Inspect official s1 inference logic and any evaluation-harness modifications for boundary behavior.
+- [x] Inspect official s1 inference logic and any evaluation-harness modifications for boundary behavior.
 - [ ] Identify think-start, think-end/answer-start, and final-end markers as actually produced by the trained model; document them exactly.
-- [ ] Implement **C natural stop**, **D cap and answer transition**, **E1/E2 interrupted stop + append `Wait` + resume**, with reproducible token accounting.
-- [ ] Keep separate `reasoning_budget`, `answer_budget`, and `absolute_safety_ceiling` controls. Prevent infinite loops.
-- [ ] For E1/E2, define exactly when an attempted stop occurs and how many continuations are consumed; do not blindly add `Wait` if a natural response never attempted to finish.
+- [x] Implement **C natural stop**, **D cap and answer transition**, **E1/E2 interrupted stop + append `Wait` + resume**, with reproducible token accounting.
+- [x] Keep separate `reasoning_budget`, `answer_budget`, and `absolute_safety_ceiling` controls. Prevent infinite loops.
+- [x] For E1/E2, define exactly when an attempted stop occurs and how many continuations are consumed; do not blindly add `Wait` if a natural response never attempted to finish.
 - [ ] Record *visible* reasoning segments, injected continuation text, stop reason, cap hits, continuation count, final answer, and total time; **do not log hidden internal model state**.
-- [ ] Unit-test: natural stop, forced early finish, one Wait, two Waits, no encountered stop marker, early EOS, answer overflow, remaining-budget exhaustion, and 0-length segments.
+- [x] Unit-test: natural stop, forced early finish, one Wait, two Waits, no encountered stop marker, early EOS, answer overflow, remaining-budget exhaustion, and 0-length segments.
 - [ ] Validate the engine on the development set; set all safety and answer allowances **before** touching the test split.
 
 **Artifacts:** `budget_forcing.py`, protocol docs, deterministic fake-generator tests, dev smoke outputs.
@@ -314,7 +314,7 @@ The layout is a **target**, not a requirement to create every file in Stage 1. C
 
 ### Stage 8 — Frozen MATH-500 test evaluation
 
-**Status:** [ ] Not started
+**Status:** [ ] Freeze, fixed-slot generation and local grader implemented and tested; benchmark remains sealed. See `docs/evaluation_protocol.md`.
 
 **Goal:** Evaluate every predeclared condition on exactly the same benchmark, without test-set tuning.
 
@@ -332,7 +332,7 @@ The layout is a **target**, not a requirement to create every file in Stage 1. C
 
 ### Stage 9 — Analysis, significance and error study
 
-**Status:** [ ] Not started
+**Status:** [ ] Paired statistics, transition/error cases and PNG/SVG export implemented and tested on synthetic fixtures; real results pending Stage 8.
 
 **Goal:** Answer the research question rigorously, including cases where extra reasoning hurts.
 
@@ -352,7 +352,7 @@ The layout is a **target**, not a requirement to create every file in Stage 1. C
 
 ### Stage 10 — Conference-style paper, demo and handoff
 
-**Status:** [ ] Not started
+**Status:** [ ] Evidence-driven paper/demo/handoff writer implemented; actual draft waits for saved results. Reproducibility and license metadata documented.
 
 **Goal:** Produce a defensible research deliverable, even if the result is a performance plateau or decline.
 
@@ -373,7 +373,7 @@ The layout is a **target**, not a requirement to create every file in Stage 1. C
 
 ## 5. Resource decisions and stop/go gates
 
-- **Local compute:** User requires the Apple M1 MacBook Air with 8 GB unified memory and a 7-core GPU. Development checks work; complete model inference/training remains to be measured. See `docs/hardware.md`.
+- **Local compute:** User requires the Apple M1 MacBook Air with 8 GB unified memory and a 7-core GPU. Base inference and stable complete-example pilot training passed; full training/evaluation are active or queued. See `docs/hardware.md`.
 - **Memory feasibility:** The proposal's **16–24 GB** target was provisional and does not describe the available Mac. Measure actual peak memory with s1K sequence lengths at Stage 5; document any required precision/backend/context changes.
 - **Original full-context upper bound:** Official training used 32,768-token blocks. This does *not* mean our hardware can handle that context; it is why length auditing is mandatory.
 - **Cost controls:** First run 1 sample → 5 samples → 20–50-example pilot → development run → final training → test matrix.
@@ -487,9 +487,9 @@ These are deliberately marked **TBD**, not filled with guesses:
 
 - **Compute environment:** local Apple M1 MacBook Air with 8 GB unified memory, per user instruction. Determine the viable backend, precision and context coverage through measured pilots; do not assume a remote GPU. See `docs/hardware.md`.
 - **Seed for the fixed 900/100 split:** resolved as 42 in Stage 2; immutable original and clean eligibility manifests are under `manifests/`. Four benchmark-overlap examples are excluded separately (896 eligible train / 100 development; 996 final before context filtering).
-- **Sequence-length policy:** inspect real lengths and memory before choosing.
-- **Training learning rate, epoch count and checkpoint-selection rule:** decide using Stage 6 development only.
-- **Whether QLoRA is necessary:** decide from Stage 5 measured feasibility.
+- **Sequence-length policy:** resolved: 9,216 ceiling, complete eligible sequences, no truncation/context exclusions; longest measured 9,109.
+- **Training learning rate, epoch count and checkpoint-selection rule:** predeclared two one-epoch trials at 5e-5 / 1e-4; select complete 100-row token-weighted NLL, tie to lower rate. Actual selection pending.
+- **Whether QLoRA is necessary:** resolved by measured failures/feasibility: local four-bit affine/group-64 conversion, FP32 activations.
 - **Exact reasoning/answer delimiter protocol for our fine-tuned 1.5B model:** prove through formatter/unit tests and generated samples.
 - **Answer budget and absolute generation safety ceiling:** decide on development runs in Stage 7.
 - **Math equivalence grading implementation and known limitations:** validate and freeze before test.
@@ -511,6 +511,8 @@ No unresolved choice is permission for Codex to select arbitrary values without 
 | 2026-11-14 | Stages 3–4 complete / Stage 5 active | Verified full checkpoint; 28/28 native FP16 MPS generations; every repeat and four fresh-load comparisons identical; exact format/mask audit all 996 eligible; 55 tests pass | `docs/stage3_report.md`; no accuracy scores; first complete-example BF16 LoRA backward profile started; no truncation/context exclusions |
 
 | 2026-11-15 | Stage 5 complete | Native MLX QLoRA/FP32 activation path; five stable pilot updates; exact fresh-process tensor/generation reload; complete 712–9,109-token backward profiles; 68 ordinary tests (4 skipped), 4 native tests passed | Source-traced 4-bit/group-64 conversion; 996 eligible examples retained without truncation; longest peak active allocation 5.833 GB; no final training/test accuracy yet; Stage 6 active |
+
+| 2026-11-15 | Stage 6 running / Stages 7–10 implementation | Resumable full trial active; 106 tests successful in the grader environment (6 optional/native skips); separate 7/7 grader tests pass; PEFT check covered in the inference environment; budget engine, sealed evaluation, paired analysis and report automation implemented | Native protocol/model results still pending; no benchmark scores or completion claim; current status via `scripts/status.py` |
 
 ---
 
