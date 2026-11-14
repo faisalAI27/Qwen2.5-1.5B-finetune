@@ -1,0 +1,38 @@
+{
+  "eligible_examples_checked": 996,
+  "train_rows": 896,
+  "development_rows": 100,
+  "training_performed": false,
+  "tokenizer_revision": "989aa7980e4cf806f80c7fef2b1adb7bc71aa306",
+  "format_config_sha256": "0454cda58c81163500b89a96a446485b456269ca6d76bcb0cf46ed1c09b7642d",
+  "eligibility_sha256": "124c450f710b98791bfec5c6853ebfd1813eb6829bba86dc8906ecfd4d7a7fee",
+  "training_pad_token_id": 151662,
+  "assistant_end_token_id": 151645,
+  "think_start_ids": [
+    151644,
+    26865,
+    198
+  ],
+  "answer_start_ids": [
+    198,
+    151644,
+    9217,
+    198
+  ],
+  "all_prompt_prefixes_align": true,
+  "all_labels_mask_prompt_and_preserve_assistant": true,
+  "all_full_sequences_round_trip": true,
+  "padding_mask_verified": true,
+  "overflow_rejected_without_truncation": true,
+  "selected_training_context": null,
+  "sample_id": "s1k-0000-aa8c2d557d63",
+  "sample_total_tokens": 8165,
+  "sample_prompt_tokens": 156,
+  "sample_supervised_tokens": 8009,
+  "sample_sha256": "a99f18e66d2b15f430df41125169b024eeeddd8c262fbfd4d8e831a7952c8898",
+  "per_example_sha256": "885f19c1917dd239aef134f65bad21769d5f60f53f11f3fac659014afdf6222c",
+  "batch_shape": [
+    2,
+    8165
+  ]
+}

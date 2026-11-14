@@ -1,0 +1,8 @@
+{
+  "version": "baseline_v1",
+  "system": "You are Qwen, created by Alibaba Cloud. You are a helpful assistant.",
+  "conditions": {
+    "A": "Give only the final answer, without explaining your reasoning. Use exactly this format: Final answer: \\boxed{your answer}",
+    "B": "Solve the problem step by step. After your reasoning, end with exactly this format: Final answer: \\boxed{your answer}"
+  }
+}

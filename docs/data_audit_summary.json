@@ -1,0 +1,256 @@
+{
+  "all_rows": {
+    "rows": 1000,
+    "percentile_method": "linear interpolation at (n-1)*p",
+    "components": {
+      "total": {
+        "min": 712,
+        "median": 5898.0,
+        "p90": 7336.6,
+        "p95": 7767.65,
+        "max": 9109
+      },
+      "prompt": {
+        "min": 41,
+        "median": 138.0,
+        "p90": 246.10000000000002,
+        "p95": 307.04999999999995,
+        "max": 859
+      },
+      "reasoning": {
+        "min": 355,
+        "median": 4968.5,
+        "p90": 6135.6,
+        "p95": 6673.4,
+        "max": 7993
+      },
+      "answer": {
+        "min": 6,
+        "median": 774.0,
+        "p90": 1085.1,
+        "p95": 1240.1,
+        "max": 3937
+      },
+      "structure": {
+        "min": 9,
+        "median": 9.0,
+        "p90": 9.0,
+        "p95": 9.0,
+        "max": 9
+      }
+    },
+    "context_limits": [
+      {
+        "limit": 1024,
+        "fits_complete_examples": 2,
+        "exceeds": 998
+      },
+      {
+        "limit": 2048,
+        "fits_complete_examples": 39,
+        "exceeds": 961
+      },
+      {
+        "limit": 4096,
+        "fits_complete_examples": 127,
+        "exceeds": 873
+      },
+      {
+        "limit": 8192,
+        "fits_complete_examples": 988,
+        "exceeds": 12
+      },
+      {
+        "limit": 16384,
+        "fits_complete_examples": 1000,
+        "exceeds": 0
+      },
+      {
+        "limit": 32768,
+        "fits_complete_examples": 1000,
+        "exceeds": 0
+      }
+    ],
+    "histogram": [
+      {
+        "lower_exclusive": 0,
+        "upper_inclusive": 1024,
+        "count": 2
+      },
+      {
+        "lower_exclusive": 1024,
+        "upper_inclusive": 2048,
+        "count": 37
+      },
+      {
+        "lower_exclusive": 2048,
+        "upper_inclusive": 4096,
+        "count": 88
+      },
+      {
+        "lower_exclusive": 4096,
+        "upper_inclusive": 8192,
+        "count": 861
+      },
+      {
+        "lower_exclusive": 8192,
+        "upper_inclusive": 16384,
+        "count": 12
+      },
+      {
+        "lower_exclusive": 16384,
+        "upper_inclusive": 32768,
+        "count": 0
+      },
+      {
+        "lower_exclusive": 32768,
+        "upper_inclusive": null,
+        "count": 0
+      }
+    ],
+    "boundary_crossing_tokens": 958,
+    "tokenizer_source": {
+      "id": "Qwen/Qwen2.5-1.5B-Instruct",
+      "revision": "989aa7980e4cf806f80c7fef2b1adb7bc71aa306"
+    },
+    "chat_template_sha256": "cd8e9439f0570856fd70470bf8889ebd8b5d1107207f67a5efb46e342330527f",
+    "split_manifest_sha256": "b05b266913beb7fd276861a6e193c112ed72ad37cf9a624e2a46c71f1bfcd77a",
+    "truncation": false,
+    "exclusions_applied": [],
+    "phase_accounting": "Single full-sequence offset mapping; boundary-spanning tokens assigned to structure",
+    "special_tokens": {
+      "<|im_start|>": [
+        151644
+      ],
+      "<|im_end|>": [
+        151645
+      ],
+      "<|fim_pad|>": [
+        151662
+      ],
+      "<|im_start|>think\n": [
+        151644,
+        26865,
+        198
+      ],
+      "\n<|im_start|>answer\n": [
+        198,
+        151644,
+        9217,
+        198
+      ]
+    }
+  },
+  "eligible_rows": {
+    "rows": 996,
+    "percentile_method": "linear interpolation at (n-1)*p",
+    "components": {
+      "total": {
+        "min": 712,
+        "median": 5899.0,
+        "p90": 7339.0,
+        "p95": 7770.25,
+        "max": 9109
+      },
+      "prompt": {
+        "min": 41,
+        "median": 138.0,
+        "p90": 246.5,
+        "p95": 307.25,
+        "max": 859
+      },
+      "reasoning": {
+        "min": 355,
+        "median": 4971.0,
+        "p90": 6138.0,
+        "p95": 6675.0,
+        "max": 7993
+      },
+      "answer": {
+        "min": 6,
+        "median": 774.0,
+        "p90": 1085.5,
+        "p95": 1240.5,
+        "max": 3937
+      },
+      "structure": {
+        "min": 9,
+        "median": 9.0,
+        "p90": 9.0,
+        "p95": 9.0,
+        "max": 9
+      }
+    },
+    "context_limits": [
+      {
+        "limit": 1024,
+        "fits_complete_examples": 2,
+        "exceeds": 994
+      },
+      {
+        "limit": 2048,
+        "fits_complete_examples": 39,
+        "exceeds": 957
+      },
+      {
+        "limit": 4096,
+        "fits_complete_examples": 127,
+        "exceeds": 869
+      },
+      {
+        "limit": 8192,
+        "fits_complete_examples": 984,
+        "exceeds": 12
+      },
+      {
+        "limit": 16384,
+        "fits_complete_examples": 996,
+        "exceeds": 0
+      },
+      {
+        "limit": 32768,
+        "fits_complete_examples": 996,
+        "exceeds": 0
+      }
+    ],
+    "histogram": [
+      {
+        "lower_exclusive": 0,
+        "upper_inclusive": 1024,
+        "count": 2
+      },
+      {
+        "lower_exclusive": 1024,
+        "upper_inclusive": 2048,
+        "count": 37
+      },
+      {
+        "lower_exclusive": 2048,
+        "upper_inclusive": 4096,
+        "count": 88
+      },
+      {
+        "lower_exclusive": 4096,
+        "upper_inclusive": 8192,
+        "count": 857
+      },
+      {
+        "lower_exclusive": 8192,
+        "upper_inclusive": 16384,
+        "count": 12
+      },
+      {
+        "lower_exclusive": 16384,
+        "upper_inclusive": 32768,
+        "count": 0
+      },
+      {
+        "lower_exclusive": 32768,
+        "upper_inclusive": null,
+        "count": 0
+      }
+    ],
+    "boundary_crossing_tokens": 954
+  },
+  "eligibility_manifest_sha256": "124c450f710b98791bfec5c6853ebfd1813eb6829bba86dc8906ecfd4d7a7fee"
+}

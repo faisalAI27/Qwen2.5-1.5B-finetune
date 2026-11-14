@@ -1,0 +1,33 @@
+schema_version: 1
+scope: development_tuning
+backend: mlx_lm
+base_format: mlx4
+activation_dtype: float32
+learning_rates: [0.00005, 0.0001]
+epochs: 1
+seed: 42
+micro_batch_size: 1
+gradient_accumulation: 16
+lora_rank: 16
+lora_alpha: 32
+lora_dropout: 0.05
+max_training_tokens: 9216
+loss_chunk_tokens: 128
+gradient_checkpointing: true
+optimizer: AdamW
+adam_betas: [0.9, 0.999]
+adam_eps: 0.00000001
+adam_bias_correction: true
+weight_decay: 0.0
+learning_rate_schedule: constant
+gradient_clip_norm: 1.0
+maximum_acceptable_preclip_norm: 1000000.0
+checkpoint_every_steps: 1
+keep_last_checkpoints: 2
+memory_guideline_fraction: 0.9
+cache_limit_bytes: 268435456
+minimum_free_disk_bytes: 2147483648
+selection_metric: complete_100_development_supervised_token_weighted_negative_log_likelihood
+selection_rule: minimum_development_loss_then_lower_learning_rate
+dropout_rng: sha256_seed_epoch_example_id_first_32_bits
+notes: Two full eligible-896-row trials with matched initial adapters/order/dropout, one epoch each. No epoch/seed search due measured local cost. Select using all 100 development targets, then freeze and retrain from a fresh original-derived quantized base on all 996 eligible rows for one epoch. All examples remain complete. Bias-corrected AdamW is explicit; the technical pilot used the MLX default without bias correction.

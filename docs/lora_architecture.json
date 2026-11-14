@@ -1,0 +1,24 @@
+{
+  "scope": "architecture_only_no_weight_loading",
+  "source": {
+    "id": "Qwen/Qwen2.5-1.5B-Instruct",
+    "revision": "989aa7980e4cf806f80c7fef2b1adb7bc71aa306",
+    "resolution_url": "https://huggingface.co/api/models/Qwen/Qwen2.5-1.5B-Instruct"
+  },
+  "weights_loaded": false,
+  "training_performed": false,
+  "base_parameter_dtype": "bfloat16",
+  "decoder_layers": 28,
+  "vocab_size": 151936,
+  "lora_rank": 16,
+  "lora_alpha": 32,
+  "lora_dropout": 0.05,
+  "target_module_count": 112,
+  "trainable_parameter_count": 4358144,
+  "total_parameter_count": 1548072448,
+  "effective_scaling": 2.0,
+  "trainable_dtypes": [
+    "torch.float32"
+  ],
+  "base_parameters_frozen": true
+}

@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "s1small"
+version = "0.1.0"
+description = "A resource-constrained study of s1-style training and test-time scaling"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.optional-dependencies]
+data = ["transformers==5.10.1", "pyarrow==22.0.0", "PyYAML==6.0.2", "Jinja2==3.1.6"]
+inference = ["torch==2.9.1"]
+training = ["peft==0.21.3", "accelerate==1.13.0", "psutil==7.2.2"]
+mac-training = ["mlx==0.32.4", "mlx-lm==0.32.2", "sentencepiece==0.2.3"]
+
+[project.scripts]
+s1small-check = "s1small.environment:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+

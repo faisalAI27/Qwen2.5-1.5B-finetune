@@ -1,0 +1,175 @@
+{
+  "run_id": "stage3-local-v1-main",
+  "status": "complete",
+  "question_ids": [
+    "s1k-0010-2dd97bc1e39e",
+    "s1k-0019-bbfcac790a20",
+    "s1k-0026-83007e0e62e7",
+    "s1k-0027-11bbd6ebb57a",
+    "s1k-0037-e680cd669ef3"
+  ],
+  "weights_sha256": "dd924a11b4c220f385b51ffa522daea7c9f3d850e31b162bb5661df483c6d3ee",
+  "model": {
+    "load_seconds": 11.50709595810622,
+    "parameter_count": 1543714304,
+    "actual_dtype": "torch.float16",
+    "actual_device": "mps:0",
+    "quantization": null,
+    "adapter": null
+  },
+  "prompts_sha256": "bf7eee39c3da5cb7c43ae38c2d7b68f78d9db1a6534ae1f61821aa19863e562a",
+  "tokenizer_revision": "989aa7980e4cf806f80c7fef2b1adb7bc71aa306",
+  "config": {
+    "schema_version": 1,
+    "scope": "development_smoke_only",
+    "device": "mps",
+    "dtype": "float16",
+    "attention_implementation": "sdpa",
+    "seed": 42,
+    "deterministic_algorithms": true,
+    "cpu_threads": 4,
+    "mps_memory_fraction": 0.9,
+    "sample_count": 5,
+    "repeats": 2,
+    "max_new_tokens": 512,
+    "max_input_tokens": 1024,
+    "timeout_seconds": 180,
+    "do_sample": false,
+    "num_beams": 1,
+    "use_cache": true,
+    "prompts_file": "configs/prompts/baseline_v1.json",
+    "selection": "first_eligible_development_ids_in_manifest_order",
+    "notes": "Provisional smoke-test limits; not frozen benchmark budgets or final grading."
+  },
+  "conditions": {
+    "A": {
+      "planned_records": 10,
+      "successful_generations": 10,
+      "extracted_answers": 8,
+      "extraction_failures": 2,
+      "token_limit_events": 2,
+      "timeouts": 0,
+      "mean_generated_tokens": 113.4,
+      "median_generation_seconds": 2.4236158330459148,
+      "maximum_sampled_mps_driver_bytes": 3468754944
+    },
+    "B": {
+      "planned_records": 10,
+      "successful_generations": 10,
+      "extracted_answers": 0,
+      "extraction_failures": 10,
+      "token_limit_events": 10,
+      "timeouts": 0,
+      "mean_generated_tokens": 512,
+      "median_generation_seconds": 51.93703372962773,
+      "maximum_sampled_mps_driver_bytes": 3468754944
+    }
+  },
+  "repeat_checks": [
+    {
+      "question_id": "s1k-0010-2dd97bc1e39e",
+      "condition": "A",
+      "observations": 2,
+      "comparable": true,
+      "token_ids_identical": true
+    },
+    {
+      "question_id": "s1k-0010-2dd97bc1e39e",
+      "condition": "B",
+      "observations": 2,
+      "comparable": true,
+      "token_ids_identical": true
+    },
+    {
+      "question_id": "s1k-0019-bbfcac790a20",
+      "condition": "A",
+      "observations": 2,
+      "comparable": true,
+      "token_ids_identical": true
+    },
+    {
+      "question_id": "s1k-0019-bbfcac790a20",
+      "condition": "B",
+      "observations": 2,
+      "comparable": true,
+      "token_ids_identical": true
+    },
+    {
+      "question_id": "s1k-0026-83007e0e62e7",
+      "condition": "A",
+      "observations": 2,
+      "comparable": true,
+      "token_ids_identical": true
+    },
+    {
+      "question_id": "s1k-0026-83007e0e62e7",
+      "condition": "B",
+      "observations": 2,
+      "comparable": true,
+      "token_ids_identical": true
+    },
+    {
+      "question_id": "s1k-0027-11bbd6ebb57a",
+      "condition": "A",
+      "observations": 2,
+      "comparable": true,
+      "token_ids_identical": true
+    },
+    {
+      "question_id": "s1k-0027-11bbd6ebb57a",
+      "condition": "B",
+      "observations": 2,
+      "comparable": true,
+      "token_ids_identical": true
+    },
+    {
+      "question_id": "s1k-0037-e680cd669ef3",
+      "condition": "A",
+      "observations": 2,
+      "comparable": true,
+      "token_ids_identical": true
+    },
+    {
+      "question_id": "s1k-0037-e680cd669ef3",
+      "condition": "B",
+      "observations": 2,
+      "comparable": true,
+      "token_ids_identical": true
+    }
+  ],
+  "accuracy": null,
+  "grading_status": "not_scored",
+  "fresh_load_comparison": {
+    "other_run_id": "stage3-local-v1-reload",
+    "overlapping_records": [
+      {
+        "question_id": "s1k-0010-2dd97bc1e39e",
+        "condition": "A",
+        "repeat": 0,
+        "comparable": true,
+        "token_ids_identical": true
+      },
+      {
+        "question_id": "s1k-0010-2dd97bc1e39e",
+        "condition": "B",
+        "repeat": 0,
+        "comparable": true,
+        "token_ids_identical": true
+      },
+      {
+        "question_id": "s1k-0010-2dd97bc1e39e",
+        "condition": "A",
+        "repeat": 1,
+        "comparable": true,
+        "token_ids_identical": true
+      },
+      {
+        "question_id": "s1k-0010-2dd97bc1e39e",
+        "condition": "B",
+        "repeat": 1,
+        "comparable": true,
+        "token_ids_identical": true
+      }
+    ]
+  }
+}

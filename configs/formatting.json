@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "format_source": "simplescaling/s1/data/tokenization.py at pinned implementation revision",
+  "think_start": "<|im_start|>think\n",
+  "answer_start": "\n<|im_start|>answer\n",
+  "assistant_end": "<|im_end|>\n",
+  "training_pad_token": "<|fim_pad|>",
+  "loss": "assistant-only causal next-token loss",
+  "ignore_index": -100,
+  "padding_side": "right",
+  "overflow_policy": "reject_complete_example_without_truncation",
+  "max_training_tokens": null,
+  "context_policy_status": "Global ceiling remains unset until hardware profiling; full examples only"
+}

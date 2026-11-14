@@ -1,0 +1,31 @@
+{
+  "status": "complete",
+  "scope": "technical_smoke",
+  "learning_rate": 0.0001,
+  "training_examples": 4,
+  "development_examples": 2,
+  "development_ids": [
+    "s1k-0010-2dd97bc1e39e",
+    "s1k-0019-bbfcac790a20"
+  ],
+  "development_loss": 0.5972211602321682,
+  "development_supervised_tokens": 12235,
+  "training_cursor": {
+    "completed_steps": 2,
+    "epoch": 1,
+    "next_offset": 0,
+    "examples_committed": 4,
+    "input_tokens_committed": 22097,
+    "supervised_tokens_committed": 21601,
+    "training_seconds_committed": 252.94244049978442
+  },
+  "peak_mlx_active_bytes": 5496454100,
+  "adapter_tensor_sha256": "2131ec5a6965e5b0298ccdc1af6fc2dd508ebe7bac4d66b8a126ee02e55d475b",
+  "initial_adapter_tensor_sha256": "67a0ab306b3d76c5f4dafebc3fe0e981cdb264ae6ffdc4ced498a907f4a1d9ce",
+  "adapter_directory": "artifacts/training/full-runner-smoke-v1/adapter",
+  "attempt_wall_seconds": 307.56423891708255,
+  "test_scored": false,
+  "run_id": "full-runner-smoke-v1",
+  "fresh_process_reload_identical": true,
+  "reloaded_adapter_tensor_sha256": "2131ec5a6965e5b0298ccdc1af6fc2dd508ebe7bac4d66b8a126ee02e55d475b"
+}

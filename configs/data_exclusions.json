@@ -1,0 +1,11 @@
+{
+  "policy": "Exclude confirmed benchmark overlap from all training/tuning; preserve raw split and full 500-question benchmark",
+  "review_basis": "Question text only; no benchmark answers, solutions or scores used",
+  "reviewed_on": "2026-11-14",
+  "exclusions": [
+    {"s1k_id": "s1k-0081-10cffa339e5e", "benchmark_id": "test/intermediate_algebra/1849.json", "reason": "Identical question"},
+    {"s1k_id": "s1k-0124-b45987b898e8", "benchmark_id": "test/intermediate_algebra/1411.json", "reason": "Same question with whitespace and punctuation spacing changes; token sequence similarity 1.0"},
+    {"s1k_id": "s1k-0181-34c785ee4d2f", "benchmark_id": "test/intermediate_algebra/558.json", "reason": "Identical question"},
+    {"s1k_id": "s1k-0498-dfdb7eb862b7", "benchmark_id": "test/intermediate_algebra/1063.json", "reason": "Same complex recurrence and initial value; asks a+b instead of z_2002. Conservatively exclude shared-solution task overlap"}
+  ]
+}

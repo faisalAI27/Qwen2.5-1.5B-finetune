@@ -1,0 +1,32 @@
+schema_version: 1
+scope: technical_feasibility_pilot_only
+backend: pytorch_peft
+device: mps
+dtype: bfloat16
+attention_implementation: s1_chunked
+attention_chunk_tokens: 128
+loss_implementation: chunked
+loss_chunk_tokens: 128
+seed: 42
+deterministic_algorithms: true
+cpu_threads: 4
+mps_memory_fraction: 0.90
+lora_rank: 16
+lora_alpha: 32
+lora_dropout: 0.05
+target_modules: [q_proj, k_proj, v_proj, o_proj]
+micro_batch_size: 1
+gradient_checkpointing: true
+gradient_accumulation: 4
+pilot_examples: 20
+learning_rate: 0.0001
+weight_decay: 0.0
+adam_beta1: 0.9
+adam_beta2: 0.999
+gradient_clip_norm: 1.0
+maximum_acceptable_preclip_norm: 1000000.0
+clear_mps_cache_each_microbatch: true
+epochs: 1
+selection: shortest_20_eligible_training_examples_for_initial_smoke
+max_training_tokens: null
+notes: Provisional technical-pilot settings, not final hyperparameters. Ordinary loss OOMed at 712 tokens, SDPA produced nonfinite gradients in BF16/FP16, ordinary eager attention OOMed at 2006 tokens. BF16 with checkpointed query and loss chunks passed a complete 2006-token backward profile. Profile longer complete examples separately; never truncate. Accumulation is reduced from proposal 16 to 4 for five updates in a 20-example smoke run.

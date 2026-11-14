@@ -1,0 +1,20 @@
+# Source identities are pinned separately in configs/sources.json.
+schema_version: 1
+seed: 42
+expected_s1k_rows: 1000
+expected_math500_rows: 500
+development_size: 100
+training_file: data/train-00000-of-00001.parquet
+benchmark_file: test.jsonl
+tokenizer_files:
+  - tokenizer.json
+  - tokenizer_config.json
+  - vocab.json
+  - merges.txt
+candidate_context_limits: [1024, 2048, 4096, 8192, 16384, 32768]
+near_duplicate_threshold: 0.80
+near_duplicate_minimum_tokens: 8
+normalization: unicode_NFKC_casefold_whitespace_v1
+split_algorithm: sha256_seed_and_id_rank_first_100_dev_v1
+overflow_policy: audit_only_no_truncation_no_exclusions
+

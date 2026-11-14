@@ -1,0 +1,33 @@
+# Local environments, caches and generated files
+.venv/
+.venv-inference/
+.venv-mlx/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+build/
+dist/
+.DS_Store
+tmp/
+.cache/
+.hf-cache/
+
+# Credentials and machine-local settings
+.env
+.env.*
+!.env.example
+.aws/
+.codex/
+
+# Large or private experiment artifacts
+data/
+artifacts/
+results/
+wandb/
+*.safetensors
+*.pt
+*.pth
+*.ckpt
+*.bin
+

@@ -1,0 +1,14 @@
+{
+  "release": "mlx-lm==0.32.2",
+  "wheel_sha256": "5c0991248cfff5872503d74f466d2532dd8cb7fb3670cb9be7a06d7305dadc04",
+  "installed_files_match_audited_release": true,
+  "source_sha256": {
+    "mlx_lm/utils.py": "2803ff8d2298b0854797d78b16387c394801d16c57bfb30cf42ac4efbdee2873",
+    "mlx_lm/tuner/datasets.py": "dcd675376d68d1813261c8389236b586b16b9a58a5ea80be8eb535bb9d0e9689",
+    "mlx_lm/tuner/utils.py": "f59f3c027176a3975fe60e7fbd9f3f38723c27c3f888cf9e591c103f93f68588",
+    "mlx_lm/tuner/trainer.py": "0b6027fdb11803e951ceee52c83a81f82daa922ea8c6b7ca6888953461064e8e",
+    "mlx_lm/tuner/lora.py": "4d3a8edab111d4ddba33398ba8700203db7b61621c39e9c348fdd50e57278b45",
+    "mlx_lm/models/qwen2.py": "937e0321ef06a34efbd66d2ce0ce1e715aab98da4acefa376c8cd29291a0bc83"
+  },
+  "native_mask_loss_gradient_tests_passed": 3
+}

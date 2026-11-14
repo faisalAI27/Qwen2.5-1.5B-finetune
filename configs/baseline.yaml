@@ -1,0 +1,20 @@
+schema_version: 1
+scope: development_smoke_only
+device: mps
+dtype: float16
+attention_implementation: sdpa
+seed: 42
+deterministic_algorithms: true
+cpu_threads: 4
+mps_memory_fraction: 0.90
+sample_count: 5
+repeats: 2
+max_new_tokens: 512
+max_input_tokens: 1024
+timeout_seconds: 180
+do_sample: false
+num_beams: 1
+use_cache: true
+prompts_file: configs/prompts/baseline_v1.json
+selection: first_eligible_development_ids_in_manifest_order
+notes: Provisional smoke-test limits; not frozen benchmark budgets or final grading.

@@ -1,0 +1,1552 @@
+{
+  "scope": "technical_feasibility_only_not_accuracy",
+  "runs": [
+    {
+      "run_id": "mlx-profile-short-fp32-activations-v1",
+      "mode": "profile",
+      "config": {
+        "schema_version": 1,
+        "scope": "technical_feasibility_pilot_only",
+        "backend": "mlx_lm",
+        "device": "gpu",
+        "base_dtype": "bfloat16",
+        "quantization": null,
+        "seed": 42,
+        "micro_batch_size": 1,
+        "lora_rank": 16,
+        "lora_alpha": 32,
+        "lora_scale": 2.0,
+        "lora_dropout": 0.05,
+        "gradient_checkpointing": true,
+        "loss_chunk_tokens": 128,
+        "gradient_accumulation": 4,
+        "pilot_examples": 20,
+        "epochs": 1,
+        "learning_rate": 0.0001,
+        "weight_decay": 0.0,
+        "gradient_clip_norm": 1.0,
+        "maximum_acceptable_preclip_norm": 1000000.0,
+        "memory_fraction": 0.9,
+        "cache_limit_bytes": 268435456,
+        "max_training_tokens": null,
+        "notes": "Technical pilot only. Same original BF16 checkpoint, no quantization. Explicit reference labels replace the upstream iterator/loss boundary mask. Scale 2.0 equals alpha/r; all 28 layers and only q/k/v/o. The generous preclip-norm abort guard is for numerical feasibility, not a model-selection score; the prior Torch norm near 1e35 must not lead to a training-success claim.",
+        "activation_dtype": "float32"
+      },
+      "weights_sha256": "dd924a11b4c220f385b51ffa522daea7c9f3d850e31b162bb5661df483c6d3ee",
+      "manifest_sha256": "e1ab60e58d6353359c0856d476c624c6fdd60de080011c0d016fd57c8cfc48b8",
+      "loss_implementation": "standard",
+      "loss_chunk_tokens": null,
+      "status": "complete",
+      "examples": [
+        {
+          "id": "s1k-0548-f8828cbdd584",
+          "tokens": 712,
+          "supervised_tokens": 645
+        }
+      ],
+      "summary": {
+        "status": "complete",
+        "mode": "single_forward_backward_no_optimizer_update",
+        "loss": 1.3219809532165527,
+        "input_tokens": 712,
+        "supervised_tokens": 645,
+        "seconds": 57.8427172920201,
+        "optimizer_updates": 0,
+        "trainable_tensors_with_grad": 224,
+        "all_gradients_finite": true,
+        "gradient_norm_before_clip": 0.8627598515339898,
+        "maximum_absolute_gradient": 0.051078908145427704,
+        "peak_mlx_active_bytes": 9348822140,
+        "memory_note": "MLX allocator active peak, not dedicated VRAM"
+      }
+    },
+    {
+      "run_id": "mlx-profile-short-v1",
+      "mode": "profile",
+      "config": {
+        "schema_version": 1,
+        "scope": "technical_feasibility_pilot_only",
+        "backend": "mlx_lm",
+        "device": "gpu",
+        "base_dtype": "bfloat16",
+        "quantization": null,
+        "seed": 42,
+        "micro_batch_size": 1,
+        "lora_rank": 16,
+        "lora_alpha": 32,
+        "lora_scale": 2.0,
+        "lora_dropout": 0.05,
+        "gradient_checkpointing": true,
+        "loss_chunk_tokens": 128,
+        "gradient_accumulation": 4,
+        "pilot_examples": 20,
+        "epochs": 1,
+        "learning_rate": 0.0001,
+        "weight_decay": 0.0,
+        "gradient_clip_norm": 1.0,
+        "maximum_acceptable_preclip_norm": 1000000.0,
+        "memory_fraction": 0.9,
+        "cache_limit_bytes": 268435456,
+        "max_training_tokens": null,
+        "notes": "Technical pilot only. Same original BF16 checkpoint, no quantization. Explicit reference labels replace the upstream iterator/loss boundary mask. Scale 2.0 equals alpha/r; all 28 layers and only q/k/v/o. The generous preclip-norm abort guard is for numerical feasibility, not a model-selection score; the prior Torch norm near 1e35 must not lead to a training-success claim."
+      },
+      "weights_sha256": "dd924a11b4c220f385b51ffa522daea7c9f3d850e31b162bb5661df483c6d3ee",
+      "manifest_sha256": "23e58187fedd757e0e6b0ff185ca74cfcd064f55618cc6c5d02a38604e1dbb3e",
+      "loss_implementation": "standard",
+      "loss_chunk_tokens": null,
+      "status": "failed",
+      "examples": [
+        {
+          "id": "s1k-0548-f8828cbdd584",
+          "tokens": 712,
+          "supervised_tokens": 645
+        }
+      ],
+      "error_type": "ValueError",
+      "error": "Invalid loss or implausible gradient magnitude",
+      "optimizer_updates_completed": 0,
+      "memory": {
+        "peak_mlx_active_bytes": 4308443624
+      }
+    },
+    {
+      "run_id": "mlx-stage5-qlora-v1-2000",
+      "mode": "profile",
+      "config": {
+        "schema_version": 1,
+        "scope": "technical_feasibility_pilot_only",
+        "backend": "mlx_lm",
+        "device": "gpu",
+        "base_dtype": "bfloat16",
+        "quantization": {
+          "bits": 4,
+          "group_size": 64,
+          "mode": "affine"
+        },
+        "seed": 42,
+        "micro_batch_size": 1,
+        "lora_rank": 16,
+        "lora_alpha": 32,
+        "lora_scale": 2.0,
+        "lora_dropout": 0.05,
+        "gradient_checkpointing": true,
+        "loss_chunk_tokens": 128,
+        "gradient_accumulation": 4,
+        "pilot_examples": 20,
+        "epochs": 1,
+        "learning_rate": 0.0001,
+        "weight_decay": 0.0,
+        "gradient_clip_norm": 1.0,
+        "maximum_acceptable_preclip_norm": 1000000.0,
+        "memory_fraction": 0.9,
+        "cache_limit_bytes": 268435456,
+        "max_training_tokens": null,
+        "notes": "Technical pilot only. Same original BF16 checkpoint, no quantization. Explicit reference labels replace the upstream iterator/loss boundary mask. Scale 2.0 equals alpha/r; all 28 layers and only q/k/v/o. The generous preclip-norm abort guard is for numerical feasibility, not a model-selection score; the prior Torch norm near 1e35 must not lead to a training-success claim.",
+        "activation_dtype": "float32",
+        "base_format": "mlx4"
+      },
+      "weights_sha256": "dd924a11b4c220f385b51ffa522daea7c9f3d850e31b162bb5661df483c6d3ee",
+      "manifest_sha256": "4fe28f8ccebacffbf4bb25fcf8d628d2444b24fd77fe270ed672c8dce1a95c51",
+      "loss_implementation": "standard",
+      "loss_chunk_tokens": null,
+      "status": "complete",
+      "examples": [
+        {
+          "id": "s1k-0886-e4b2ce9dd745",
+          "tokens": 2006,
+          "supervised_tokens": 1771
+        }
+      ],
+      "summary": {
+        "status": "complete",
+        "mode": "single_forward_backward_no_optimizer_update",
+        "loss": 0.8930383920669556,
+        "input_tokens": 2006,
+        "supervised_tokens": 1771,
+        "seconds": 17.98493954190053,
+        "optimizer_updates": 0,
+        "trainable_tensors_with_grad": 224,
+        "all_gradients_finite": true,
+        "gradient_norm_before_clip": 0.40429875551630734,
+        "maximum_absolute_gradient": 0.01757032796740532,
+        "peak_mlx_active_bytes": 2991203372,
+        "memory_note": "MLX allocator active peak, not dedicated VRAM"
+      }
+    },
+    {
+      "run_id": "mlx-stage5-qlora-v1-6000",
+      "mode": "profile",
+      "config": {
+        "schema_version": 1,
+        "scope": "technical_feasibility_pilot_only",
+        "backend": "mlx_lm",
+        "device": "gpu",
+        "base_dtype": "bfloat16",
+        "quantization": {
+          "bits": 4,
+          "group_size": 64,
+          "mode": "affine"
+        },
+        "seed": 42,
+        "micro_batch_size": 1,
+        "lora_rank": 16,
+        "lora_alpha": 32,
+        "lora_scale": 2.0,
+        "lora_dropout": 0.05,
+        "gradient_checkpointing": true,
+        "loss_chunk_tokens": 128,
+        "gradient_accumulation": 4,
+        "pilot_examples": 20,
+        "epochs": 1,
+        "learning_rate": 0.0001,
+        "weight_decay": 0.0,
+        "gradient_clip_norm": 1.0,
+        "maximum_acceptable_preclip_norm": 1000000.0,
+        "memory_fraction": 0.9,
+        "cache_limit_bytes": 268435456,
+        "max_training_tokens": null,
+        "notes": "Technical pilot only. Same original BF16 checkpoint, no quantization. Explicit reference labels replace the upstream iterator/loss boundary mask. Scale 2.0 equals alpha/r; all 28 layers and only q/k/v/o. The generous preclip-norm abort guard is for numerical feasibility, not a model-selection score; the prior Torch norm near 1e35 must not lead to a training-success claim.",
+        "activation_dtype": "float32",
+        "base_format": "mlx4"
+      },
+      "weights_sha256": "dd924a11b4c220f385b51ffa522daea7c9f3d850e31b162bb5661df483c6d3ee",
+      "manifest_sha256": "4fe28f8ccebacffbf4bb25fcf8d628d2444b24fd77fe270ed672c8dce1a95c51",
+      "loss_implementation": "standard",
+      "loss_chunk_tokens": null,
+      "status": "complete",
+      "examples": [
+        {
+          "id": "s1k-0659-683631c064f8",
+          "tokens": 6010,
+          "supervised_tokens": 5917
+        }
+      ],
+      "summary": {
+        "status": "complete",
+        "mode": "single_forward_backward_no_optimizer_update",
+        "loss": 0.34260985255241394,
+        "input_tokens": 6010,
+        "supervised_tokens": 5917,
+        "seconds": 66.43610429111868,
+        "optimizer_updates": 0,
+        "trainable_tensors_with_grad": 224,
+        "all_gradients_finite": true,
+        "gradient_norm_before_clip": 0.20014705835787355,
+        "maximum_absolute_gradient": 0.009106376208364964,
+        "peak_mlx_active_bytes": 4965186436,
+        "memory_note": "MLX allocator active peak, not dedicated VRAM"
+      }
+    },
+    {
+      "run_id": "mlx-stage5-qlora-v1-max-dev",
+      "mode": "profile",
+      "config": {
+        "schema_version": 1,
+        "scope": "technical_feasibility_pilot_only",
+        "backend": "mlx_lm",
+        "device": "gpu",
+        "base_dtype": "bfloat16",
+        "quantization": {
+          "bits": 4,
+          "group_size": 64,
+          "mode": "affine"
+        },
+        "seed": 42,
+        "micro_batch_size": 1,
+        "lora_rank": 16,
+        "lora_alpha": 32,
+        "lora_scale": 2.0,
+        "lora_dropout": 0.05,
+        "gradient_checkpointing": true,
+        "loss_chunk_tokens": 128,
+        "gradient_accumulation": 4,
+        "pilot_examples": 20,
+        "epochs": 1,
+        "learning_rate": 0.0001,
+        "weight_decay": 0.0,
+        "gradient_clip_norm": 1.0,
+        "maximum_acceptable_preclip_norm": 1000000.0,
+        "memory_fraction": 0.9,
+        "cache_limit_bytes": 268435456,
+        "max_training_tokens": null,
+        "notes": "Technical pilot only. Same original BF16 checkpoint, no quantization. Explicit reference labels replace the upstream iterator/loss boundary mask. Scale 2.0 equals alpha/r; all 28 layers and only q/k/v/o. The generous preclip-norm abort guard is for numerical feasibility, not a model-selection score; the prior Torch norm near 1e35 must not lead to a training-success claim.",
+        "activation_dtype": "float32",
+        "base_format": "mlx4"
+      },
+      "weights_sha256": "dd924a11b4c220f385b51ffa522daea7c9f3d850e31b162bb5661df483c6d3ee",
+      "manifest_sha256": "492c8e73e1ee74c916b38152de8ff6ed053ccbb8c2303a3cf6873bc91f7f3e61",
+      "loss_implementation": "standard",
+      "loss_chunk_tokens": null,
+      "status": "complete",
+      "examples": [
+        {
+          "id": "s1k-0194-73913016d19b",
+          "tokens": 9109,
+          "supervised_tokens": 8894
+        }
+      ],
+      "summary": {
+        "status": "complete",
+        "mode": "single_forward_backward_no_optimizer_update",
+        "loss": 1.043668508529663,
+        "input_tokens": 9109,
+        "supervised_tokens": 8894,
+        "seconds": 114.51731387502514,
+        "optimizer_updates": 0,
+        "trainable_tensors_with_grad": 224,
+        "all_gradients_finite": true,
+        "gradient_norm_before_clip": 0.3557016431503485,
+        "maximum_absolute_gradient": 0.023620042949914932,
+        "peak_mlx_active_bytes": 5832500352,
+        "memory_note": "MLX allocator active peak, not dedicated VRAM"
+      }
+    },
+    {
+      "run_id": "mlx-stage5-qlora-v1-max-train",
+      "mode": "profile",
+      "config": {
+        "schema_version": 1,
+        "scope": "technical_feasibility_pilot_only",
+        "backend": "mlx_lm",
+        "device": "gpu",
+        "base_dtype": "bfloat16",
+        "quantization": {
+          "bits": 4,
+          "group_size": 64,
+          "mode": "affine"
+        },
+        "seed": 42,
+        "micro_batch_size": 1,
+        "lora_rank": 16,
+        "lora_alpha": 32,
+        "lora_scale": 2.0,
+        "lora_dropout": 0.05,
+        "gradient_checkpointing": true,
+        "loss_chunk_tokens": 128,
+        "gradient_accumulation": 4,
+        "pilot_examples": 20,
+        "epochs": 1,
+        "learning_rate": 0.0001,
+        "weight_decay": 0.0,
+        "gradient_clip_norm": 1.0,
+        "maximum_acceptable_preclip_norm": 1000000.0,
+        "memory_fraction": 0.9,
+        "cache_limit_bytes": 268435456,
+        "max_training_tokens": null,
+        "notes": "Technical pilot only. Same original BF16 checkpoint, no quantization. Explicit reference labels replace the upstream iterator/loss boundary mask. Scale 2.0 equals alpha/r; all 28 layers and only q/k/v/o. The generous preclip-norm abort guard is for numerical feasibility, not a model-selection score; the prior Torch norm near 1e35 must not lead to a training-success claim.",
+        "activation_dtype": "float32",
+        "base_format": "mlx4"
+      },
+      "weights_sha256": "dd924a11b4c220f385b51ffa522daea7c9f3d850e31b162bb5661df483c6d3ee",
+      "manifest_sha256": "4fe28f8ccebacffbf4bb25fcf8d628d2444b24fd77fe270ed672c8dce1a95c51",
+      "loss_implementation": "standard",
+      "loss_chunk_tokens": null,
+      "status": "complete",
+      "examples": [
+        {
+          "id": "s1k-0695-5aa3dbda707a",
+          "tokens": 8862,
+          "supervised_tokens": 8715
+        }
+      ],
+      "summary": {
+        "status": "complete",
+        "mode": "single_forward_backward_no_optimizer_update",
+        "loss": 0.2530040740966797,
+        "input_tokens": 8862,
+        "supervised_tokens": 8715,
+        "seconds": 111.27585358405486,
+        "optimizer_updates": 0,
+        "trainable_tensors_with_grad": 224,
+        "all_gradients_finite": true,
+        "gradient_norm_before_clip": 0.13031803407475673,
+        "maximum_absolute_gradient": 0.010993322357535362,
+        "peak_mlx_active_bytes": 5698217080,
+        "memory_note": "MLX allocator active peak, not dedicated VRAM"
+      }
+    },
+    {
+      "run_id": "mlx-stage5-qlora-v1-pilot20",
+      "mode": "pilot",
+      "config": {
+        "schema_version": 1,
+        "scope": "technical_feasibility_pilot_only",
+        "backend": "mlx_lm",
+        "device": "gpu",
+        "base_dtype": "bfloat16",
+        "quantization": {
+          "bits": 4,
+          "group_size": 64,
+          "mode": "affine"
+        },
+        "seed": 42,
+        "micro_batch_size": 1,
+        "lora_rank": 16,
+        "lora_alpha": 32,
+        "lora_scale": 2.0,
+        "lora_dropout": 0.05,
+        "gradient_checkpointing": true,
+        "loss_chunk_tokens": 128,
+        "gradient_accumulation": 4,
+        "pilot_examples": 20,
+        "epochs": 1,
+        "learning_rate": 0.0001,
+        "weight_decay": 0.0,
+        "gradient_clip_norm": 1.0,
+        "maximum_acceptable_preclip_norm": 1000000.0,
+        "memory_fraction": 0.9,
+        "cache_limit_bytes": 268435456,
+        "max_training_tokens": null,
+        "notes": "Technical pilot only. Same original BF16 checkpoint, no quantization. Explicit reference labels replace the upstream iterator/loss boundary mask. Scale 2.0 equals alpha/r; all 28 layers and only q/k/v/o. The generous preclip-norm abort guard is for numerical feasibility, not a model-selection score; the prior Torch norm near 1e35 must not lead to a training-success claim.",
+        "activation_dtype": "float32",
+        "base_format": "mlx4"
+      },
+      "weights_sha256": "dd924a11b4c220f385b51ffa522daea7c9f3d850e31b162bb5661df483c6d3ee",
+      "manifest_sha256": "756407d505cbc04981a3ab076b2b1b58294030daa563df1d7825cd4768c92c54",
+      "loss_implementation": "standard",
+      "loss_chunk_tokens": null,
+      "status": "complete",
+      "examples": [
+        {
+          "id": "s1k-0548-f8828cbdd584",
+          "tokens": 712,
+          "supervised_tokens": 645
+        },
+        {
+          "id": "s1k-0864-00e51c4f0be0",
+          "tokens": 981,
+          "supervised_tokens": 915
+        },
+        {
+          "id": "s1k-0651-6a1247395789",
+          "tokens": 1045,
+          "supervised_tokens": 979
+        },
+        {
+          "id": "s1k-0912-7544af07f573",
+          "tokens": 1070,
+          "supervised_tokens": 1003
+        },
+        {
+          "id": "s1k-0892-9e74a08af19a",
+          "tokens": 1086,
+          "supervised_tokens": 1021
+        },
+        {
+          "id": "s1k-0370-335501cccb7e",
+          "tokens": 1132,
+          "supervised_tokens": 1071
+        },
+        {
+          "id": "s1k-0802-e9480b91a2c5",
+          "tokens": 1144,
+          "supervised_tokens": 1041
+        },
+        {
+          "id": "s1k-0808-bf17ead13159",
+          "tokens": 1202,
+          "supervised_tokens": 1138
+        },
+        {
+          "id": "s1k-0799-618d9cc864be",
+          "tokens": 1212,
+          "supervised_tokens": 1147
+        },
+        {
+          "id": "s1k-0136-adc72a268d7a",
+          "tokens": 1259,
+          "supervised_tokens": 1091
+        },
+        {
+          "id": "s1k-0635-fd88b550b6aa",
+          "tokens": 1441,
+          "supervised_tokens": 1277
+        },
+        {
+          "id": "s1k-0448-32dc49727c0c",
+          "tokens": 1463,
+          "supervised_tokens": 1295
+        },
+        {
+          "id": "s1k-0949-6c4fe266d38c",
+          "tokens": 1550,
+          "supervised_tokens": 1379
+        },
+        {
+          "id": "s1k-0005-a2c65522c29d",
+          "tokens": 1554,
+          "supervised_tokens": 1506
+        },
+        {
+          "id": "s1k-0836-6800a9773c0b",
+          "tokens": 1578,
+          "supervised_tokens": 1352
+        },
+        {
+          "id": "s1k-0595-36b38f8fa315",
+          "tokens": 1593,
+          "supervised_tokens": 1259
+        },
+        {
+          "id": "s1k-0867-fd83ecdad60f",
+          "tokens": 1699,
+          "supervised_tokens": 1606
+        },
+        {
+          "id": "s1k-0101-ee88b015a8eb",
+          "tokens": 1733,
+          "supervised_tokens": 1561
+        },
+        {
+          "id": "s1k-0744-9c7c633e1d09",
+          "tokens": 1755,
+          "supervised_tokens": 1709
+        },
+        {
+          "id": "s1k-0605-56028f6ccce8",
+          "tokens": 1762,
+          "supervised_tokens": 1643
+        }
+      ],
+      "summary": {
+        "status": "complete",
+        "examples": 20,
+        "optimizer_updates": 5,
+        "training_seconds": 233.6655307910405,
+        "input_tokens": 26971,
+        "input_tokens_per_second": 115.42566808503429,
+        "peak_mlx_active_bytes": 2993071108,
+        "adapter_directory": "artifacts/pilots/mlx-stage5-qlora-v1-pilot20",
+        "adapter_bytes": 17460094,
+        "adapter_tensor_sha256": "d4ef0e31f581b56ad73a892bae2922371e7d748ed8a99aa8659297fd6f3fac93",
+        "reload_tokens_identical": true,
+        "reload_adapter_tensor_sha256": "d4ef0e31f581b56ad73a892bae2922371e7d748ed8a99aa8659297fd6f3fac93",
+        "verification_process": "fresh_native_process",
+        "accuracy": null
+      }
+    },
+    {
+      "run_id": "mlx-stage5-qlora-v1-short",
+      "mode": "profile",
+      "config": {
+        "schema_version": 1,
+        "scope": "technical_feasibility_pilot_only",
+        "backend": "mlx_lm",
+        "device": "gpu",
+        "base_dtype": "bfloat16",
+        "quantization": {
+          "bits": 4,
+          "group_size": 64,
+          "mode": "affine"
+        },
+        "seed": 42,
+        "micro_batch_size": 1,
+        "lora_rank": 16,
+        "lora_alpha": 32,
+        "lora_scale": 2.0,
+        "lora_dropout": 0.05,
+        "gradient_checkpointing": true,
+        "loss_chunk_tokens": 128,
+        "gradient_accumulation": 4,
+        "pilot_examples": 20,
+        "epochs": 1,
+        "learning_rate": 0.0001,
+        "weight_decay": 0.0,
+        "gradient_clip_norm": 1.0,
+        "maximum_acceptable_preclip_norm": 1000000.0,
+        "memory_fraction": 0.9,
+        "cache_limit_bytes": 268435456,
+        "max_training_tokens": null,
+        "notes": "Technical pilot only. Same original BF16 checkpoint, no quantization. Explicit reference labels replace the upstream iterator/loss boundary mask. Scale 2.0 equals alpha/r; all 28 layers and only q/k/v/o. The generous preclip-norm abort guard is for numerical feasibility, not a model-selection score; the prior Torch norm near 1e35 must not lead to a training-success claim.",
+        "activation_dtype": "float32",
+        "base_format": "mlx4"
+      },
+      "weights_sha256": "dd924a11b4c220f385b51ffa522daea7c9f3d850e31b162bb5661df483c6d3ee",
+      "manifest_sha256": "4fe28f8ccebacffbf4bb25fcf8d628d2444b24fd77fe270ed672c8dce1a95c51",
+      "loss_implementation": "standard",
+      "loss_chunk_tokens": null,
+      "status": "complete",
+      "examples": [
+        {
+          "id": "s1k-0548-f8828cbdd584",
+          "tokens": 712,
+          "supervised_tokens": 645
+        }
+      ],
+      "summary": {
+        "status": "complete",
+        "mode": "single_forward_backward_no_optimizer_update",
+        "loss": 1.35344660282135,
+        "input_tokens": 712,
+        "supervised_tokens": 645,
+        "seconds": 6.0711497908923775,
+        "optimizer_updates": 0,
+        "trainable_tensors_with_grad": 224,
+        "all_gradients_finite": true,
+        "gradient_norm_before_clip": 0.8125590673914214,
+        "maximum_absolute_gradient": 0.0550287589430809,
+        "peak_mlx_active_bytes": 2223727774,
+        "memory_note": "MLX allocator active peak, not dedicated VRAM"
+      }
+    },
+    {
+      "run_id": "torch-pilot20-cpu-norm-v2",
+      "mode": "pilot",
+      "config": {
+        "schema_version": 1,
+        "scope": "technical_feasibility_pilot_only",
+        "backend": "pytorch_peft",
+        "device": "mps",
+        "dtype": "bfloat16",
+        "attention_implementation": "s1_chunked",
+        "attention_chunk_tokens": 128,
+        "loss_implementation": "chunked",
+        "loss_chunk_tokens": 128,
+        "seed": 42,
+        "deterministic_algorithms": true,
+        "cpu_threads": 4,
+        "mps_memory_fraction": 0.9,
+        "lora_rank": 16,
+        "lora_alpha": 32,
+        "lora_dropout": 0.05,
+        "target_modules": [
+          "q_proj",
+          "k_proj",
+          "v_proj",
+          "o_proj"
+        ],
+        "micro_batch_size": 1,
+        "gradient_checkpointing": true,
+        "gradient_accumulation": 4,
+        "pilot_examples": 20,
+        "learning_rate": 0.0001,
+        "weight_decay": 0.0,
+        "adam_beta1": 0.9,
+        "adam_beta2": 0.999,
+        "gradient_clip_norm": 1.0,
+        "clear_mps_cache_each_microbatch": true,
+        "epochs": 1,
+        "selection": "shortest_20_eligible_training_examples_for_initial_smoke",
+        "max_training_tokens": null,
+        "notes": "Provisional technical-pilot settings, not final hyperparameters. Ordinary loss OOMed at 712 tokens, SDPA produced nonfinite gradients in BF16/FP16, ordinary eager attention OOMed at 2006 tokens. BF16 with checkpointed query and loss chunks passed a complete 2006-token backward profile. Profile longer complete examples separately; never truncate. Accumulation is reduced from proposal 16 to 4 for five updates in a 20-example smoke run."
+      },
+      "weights_sha256": "dd924a11b4c220f385b51ffa522daea7c9f3d850e31b162bb5661df483c6d3ee",
+      "manifest_sha256": "3b51443f727ad73461425157002e038328063272d0d988b9b9c379acabc60ea2",
+      "loss_implementation": "chunked",
+      "loss_chunk_tokens": 128,
+      "status": "aborted_numerical_instability",
+      "examples": [
+        {
+          "id": "s1k-0548-f8828cbdd584",
+          "tokens": 712,
+          "supervised_tokens": 645
+        },
+        {
+          "id": "s1k-0864-00e51c4f0be0",
+          "tokens": 981,
+          "supervised_tokens": 915
+        },
+        {
+          "id": "s1k-0651-6a1247395789",
+          "tokens": 1045,
+          "supervised_tokens": 979
+        },
+        {
+          "id": "s1k-0912-7544af07f573",
+          "tokens": 1070,
+          "supervised_tokens": 1003
+        },
+        {
+          "id": "s1k-0892-9e74a08af19a",
+          "tokens": 1086,
+          "supervised_tokens": 1021
+        },
+        {
+          "id": "s1k-0370-335501cccb7e",
+          "tokens": 1132,
+          "supervised_tokens": 1071
+        },
+        {
+          "id": "s1k-0802-e9480b91a2c5",
+          "tokens": 1144,
+          "supervised_tokens": 1041
+        },
+        {
+          "id": "s1k-0808-bf17ead13159",
+          "tokens": 1202,
+          "supervised_tokens": 1138
+        },
+        {
+          "id": "s1k-0799-618d9cc864be",
+          "tokens": 1212,
+          "supervised_tokens": 1147
+        },
+        {
+          "id": "s1k-0136-adc72a268d7a",
+          "tokens": 1259,
+          "supervised_tokens": 1091
+        },
+        {
+          "id": "s1k-0635-fd88b550b6aa",
+          "tokens": 1441,
+          "supervised_tokens": 1277
+        },
+        {
+          "id": "s1k-0448-32dc49727c0c",
+          "tokens": 1463,
+          "supervised_tokens": 1295
+        },
+        {
+          "id": "s1k-0949-6c4fe266d38c",
+          "tokens": 1550,
+          "supervised_tokens": 1379
+        },
+        {
+          "id": "s1k-0005-a2c65522c29d",
+          "tokens": 1554,
+          "supervised_tokens": 1506
+        },
+        {
+          "id": "s1k-0836-6800a9773c0b",
+          "tokens": 1578,
+          "supervised_tokens": 1352
+        },
+        {
+          "id": "s1k-0595-36b38f8fa315",
+          "tokens": 1593,
+          "supervised_tokens": 1259
+        },
+        {
+          "id": "s1k-0867-fd83ecdad60f",
+          "tokens": 1699,
+          "supervised_tokens": 1606
+        },
+        {
+          "id": "s1k-0101-ee88b015a8eb",
+          "tokens": 1733,
+          "supervised_tokens": 1561
+        },
+        {
+          "id": "s1k-0744-9c7c633e1d09",
+          "tokens": 1755,
+          "supervised_tokens": 1709
+        },
+        {
+          "id": "s1k-0605-56028f6ccce8",
+          "tokens": 1762,
+          "supervised_tokens": 1643
+        }
+      ],
+      "interruption": {
+        "status": "aborted_numerical_instability",
+        "reason": "Agent interrupted after independently observed preclip norm 5.9396043215150886e35; do not treat finite elements or the clipped update as acceptable training.",
+        "optimizer_updates_completed": 1,
+        "adapter_saved": false,
+        "mechanism": "KeyboardInterrupt sent through the running tool session",
+        "date_local": "2026-11-15"
+      }
+    },
+    {
+      "run_id": "torch-pilot20-query-chunked-v1",
+      "mode": "pilot",
+      "config": {
+        "schema_version": 1,
+        "scope": "technical_feasibility_pilot_only",
+        "backend": "pytorch_peft",
+        "device": "mps",
+        "dtype": "bfloat16",
+        "attention_implementation": "s1_chunked",
+        "attention_chunk_tokens": 128,
+        "loss_implementation": "chunked",
+        "loss_chunk_tokens": 128,
+        "seed": 42,
+        "deterministic_algorithms": true,
+        "cpu_threads": 4,
+        "mps_memory_fraction": 0.9,
+        "lora_rank": 16,
+        "lora_alpha": 32,
+        "lora_dropout": 0.05,
+        "target_modules": [
+          "q_proj",
+          "k_proj",
+          "v_proj",
+          "o_proj"
+        ],
+        "micro_batch_size": 1,
+        "gradient_checkpointing": true,
+        "gradient_accumulation": 4,
+        "pilot_examples": 20,
+        "learning_rate": 0.0001,
+        "weight_decay": 0.0,
+        "adam_beta1": 0.9,
+        "adam_beta2": 0.999,
+        "gradient_clip_norm": 1.0,
+        "clear_mps_cache_each_microbatch": true,
+        "epochs": 1,
+        "selection": "shortest_20_eligible_training_examples_for_initial_smoke",
+        "max_training_tokens": null,
+        "notes": "Provisional technical-pilot settings, not final hyperparameters. Ordinary loss OOMed at 712 tokens, SDPA produced nonfinite gradients in BF16/FP16, ordinary eager attention OOMed at 2006 tokens. BF16 with checkpointed query and loss chunks passed a complete 2006-token backward profile. Profile longer complete examples separately; never truncate. Accumulation is reduced from proposal 16 to 4 for five updates in a 20-example smoke run."
+      },
+      "weights_sha256": "dd924a11b4c220f385b51ffa522daea7c9f3d850e31b162bb5661df483c6d3ee",
+      "manifest_sha256": "2a10e1d3e65da2eaa87e49f7281782f8bf474d8981c98fe6a7a77f11b8defa0c",
+      "loss_implementation": "chunked",
+      "loss_chunk_tokens": 128,
+      "status": "failed",
+      "examples": [
+        {
+          "id": "s1k-0548-f8828cbdd584",
+          "tokens": 712,
+          "supervised_tokens": 645
+        },
+        {
+          "id": "s1k-0864-00e51c4f0be0",
+          "tokens": 981,
+          "supervised_tokens": 915
+        },
+        {
+          "id": "s1k-0651-6a1247395789",
+          "tokens": 1045,
+          "supervised_tokens": 979
+        },
+        {
+          "id": "s1k-0912-7544af07f573",
+          "tokens": 1070,
+          "supervised_tokens": 1003
+        },
+        {
+          "id": "s1k-0892-9e74a08af19a",
+          "tokens": 1086,
+          "supervised_tokens": 1021
+        },
+        {
+          "id": "s1k-0370-335501cccb7e",
+          "tokens": 1132,
+          "supervised_tokens": 1071
+        },
+        {
+          "id": "s1k-0802-e9480b91a2c5",
+          "tokens": 1144,
+          "supervised_tokens": 1041
+        },
+        {
+          "id": "s1k-0808-bf17ead13159",
+          "tokens": 1202,
+          "supervised_tokens": 1138
+        },
+        {
+          "id": "s1k-0799-618d9cc864be",
+          "tokens": 1212,
+          "supervised_tokens": 1147
+        },
+        {
+          "id": "s1k-0136-adc72a268d7a",
+          "tokens": 1259,
+          "supervised_tokens": 1091
+        },
+        {
+          "id": "s1k-0635-fd88b550b6aa",
+          "tokens": 1441,
+          "supervised_tokens": 1277
+        },
+        {
+          "id": "s1k-0448-32dc49727c0c",
+          "tokens": 1463,
+          "supervised_tokens": 1295
+        },
+        {
+          "id": "s1k-0949-6c4fe266d38c",
+          "tokens": 1550,
+          "supervised_tokens": 1379
+        },
+        {
+          "id": "s1k-0005-a2c65522c29d",
+          "tokens": 1554,
+          "supervised_tokens": 1506
+        },
+        {
+          "id": "s1k-0836-6800a9773c0b",
+          "tokens": 1578,
+          "supervised_tokens": 1352
+        },
+        {
+          "id": "s1k-0595-36b38f8fa315",
+          "tokens": 1593,
+          "supervised_tokens": 1259
+        },
+        {
+          "id": "s1k-0867-fd83ecdad60f",
+          "tokens": 1699,
+          "supervised_tokens": 1606
+        },
+        {
+          "id": "s1k-0101-ee88b015a8eb",
+          "tokens": 1733,
+          "supervised_tokens": 1561
+        },
+        {
+          "id": "s1k-0744-9c7c633e1d09",
+          "tokens": 1755,
+          "supervised_tokens": 1709
+        },
+        {
+          "id": "s1k-0605-56028f6ccce8",
+          "tokens": 1762,
+          "supervised_tokens": 1643
+        }
+      ],
+      "error_type": "ValueError",
+      "error": "Nonfinite gradient norm",
+      "optimizer_updates_completed": 0,
+      "memory": {
+        "sampling_interval_seconds": 0.05,
+        "samples": 2236,
+        "sampled_peak_mps_allocated_bytes": 3818775296,
+        "sampled_peak_mps_driver_bytes": 4850548736,
+        "process_lifetime_peak_rss_bytes": 591888384,
+        "sampling_error": null,
+        "note": "MPS values are sampled peaks, not exact peak VRAM. RSS and MPS memory overlap on unified memory; do not add them."
+      }
+    },
+    {
+      "run_id": "torch-profile-2000-chunked-eager-v1",
+      "mode": "profile",
+      "config": {
+        "schema_version": 1,
+        "scope": "technical_feasibility_pilot_only",
+        "backend": "pytorch_peft",
+        "device": "mps",
+        "dtype": "bfloat16",
+        "attention_implementation": "eager",
+        "seed": 42,
+        "deterministic_algorithms": true,
+        "cpu_threads": 4,
+        "mps_memory_fraction": 0.9,
+        "lora_rank": 16,
+        "lora_alpha": 32,
+        "lora_dropout": 0.05,
+        "target_modules": [
+          "q_proj",
+          "k_proj",
+          "v_proj",
+          "o_proj"
+        ],
+        "micro_batch_size": 1,
+        "gradient_checkpointing": true,
+        "gradient_accumulation": 4,
+        "pilot_examples": 20,
+        "learning_rate": 0.0001,
+        "weight_decay": 0.0,
+        "adam_beta1": 0.9,
+        "adam_beta2": 0.999,
+        "gradient_clip_norm": 1.0,
+        "clear_mps_cache_each_microbatch": true,
+        "epochs": 1,
+        "selection": "shortest_20_eligible_training_examples_for_initial_smoke",
+        "max_training_tokens": null,
+        "notes": "Provisional technical-pilot settings, not final hyperparameters. BF16 forward/backward tensor kernels passed on this Mac; full-model feasibility remains unmeasured. Profile complete longer examples separately; never truncate. Accumulation is reduced from proposal 16 to 4 for five updates in a 20-example smoke run."
+      },
+      "weights_sha256": "dd924a11b4c220f385b51ffa522daea7c9f3d850e31b162bb5661df483c6d3ee",
+      "manifest_sha256": "2ac5edf409cddef774a323649a9f8bb37989191f1a0cd75ce14d603344000d0a",
+      "loss_implementation": "chunked",
+      "loss_chunk_tokens": 128,
+      "status": "failed",
+      "examples": [
+        {
+          "id": "s1k-0886-e4b2ce9dd745",
+          "tokens": 2006,
+          "supervised_tokens": 1771
+        }
+      ],
+      "forward": {
+        "loss": 0.8452441096305847,
+        "elapsed_seconds": 12.69819933292456
+      },
+      "error_type": "RuntimeError",
+      "error": "MPS backend out of memory (MPS allocated: 5.09 GiB, other allocations: 130.70 MiB, max allowed: 4.80 GiB). Tried to allocate 184.21 MiB on private pool. Use PYTORCH_MPS_HIGH_WATERMARK_RATIO=0.0 to disable upper limit for memory allocations (may cause system failure).",
+      "optimizer_updates_completed": 0,
+      "memory": {
+        "sampling_interval_seconds": 0.05,
+        "samples": 298,
+        "sampled_peak_mps_allocated_bytes": 4001013504,
+        "sampled_peak_mps_driver_bytes": 5608521728,
+        "process_lifetime_peak_rss_bytes": 599310336,
+        "sampling_error": null,
+        "note": "MPS values are sampled peaks, not exact peak VRAM. RSS and MPS memory overlap on unified memory; do not add them."
+      }
+    },
+    {
+      "run_id": "torch-profile-2000-query-chunked-v1",
+      "mode": "profile",
+      "config": {
+        "schema_version": 1,
+        "scope": "technical_feasibility_pilot_only",
+        "backend": "pytorch_peft",
+        "device": "mps",
+        "dtype": "bfloat16",
+        "attention_implementation": "s1_chunked",
+        "seed": 42,
+        "deterministic_algorithms": true,
+        "cpu_threads": 4,
+        "mps_memory_fraction": 0.9,
+        "lora_rank": 16,
+        "lora_alpha": 32,
+        "lora_dropout": 0.05,
+        "target_modules": [
+          "q_proj",
+          "k_proj",
+          "v_proj",
+          "o_proj"
+        ],
+        "micro_batch_size": 1,
+        "gradient_checkpointing": true,
+        "gradient_accumulation": 4,
+        "pilot_examples": 20,
+        "learning_rate": 0.0001,
+        "weight_decay": 0.0,
+        "adam_beta1": 0.9,
+        "adam_beta2": 0.999,
+        "gradient_clip_norm": 1.0,
+        "clear_mps_cache_each_microbatch": true,
+        "epochs": 1,
+        "selection": "shortest_20_eligible_training_examples_for_initial_smoke",
+        "max_training_tokens": null,
+        "notes": "Provisional technical-pilot settings, not final hyperparameters. BF16 forward/backward tensor kernels passed on this Mac; full-model feasibility remains unmeasured. Profile complete longer examples separately; never truncate. Accumulation is reduced from proposal 16 to 4 for five updates in a 20-example smoke run."
+      },
+      "weights_sha256": "dd924a11b4c220f385b51ffa522daea7c9f3d850e31b162bb5661df483c6d3ee",
+      "manifest_sha256": "fb70d0edc084ff14a5ffd2b7491f02d71d94b66748fd5045697027733c5cf44d",
+      "loss_implementation": "chunked",
+      "loss_chunk_tokens": 128,
+      "status": "complete",
+      "examples": [
+        {
+          "id": "s1k-0886-e4b2ce9dd745",
+          "tokens": 2006,
+          "supervised_tokens": 1771
+        }
+      ],
+      "forward": {
+        "loss": 0.8452441096305847,
+        "elapsed_seconds": 11.996582624968141
+      },
+      "summary": {
+        "status": "complete",
+        "mode": "single_forward_backward_no_optimizer_update",
+        "example_id": "s1k-0886-e4b2ce9dd745",
+        "input_tokens": 2006,
+        "supervised_tokens": 1771,
+        "loss": 0.8452441096305847,
+        "elapsed_seconds": 36.913556166924536,
+        "optimizer_updates": 0,
+        "gradients": {
+          "trainable_tensors": 224,
+          "tensors_with_grad": 224,
+          "all_present_gradients_finite": true,
+          "some_gradient_nonzero": true
+        }
+      },
+      "memory": {
+        "sampling_interval_seconds": 0.05,
+        "samples": 687,
+        "sampled_peak_mps_allocated_bytes": 3912674304,
+        "sampled_peak_mps_driver_bytes": 4600840192,
+        "process_lifetime_peak_rss_bytes": 500547584,
+        "sampling_error": null,
+        "note": "MPS values are sampled peaks, not exact peak VRAM. RSS and MPS memory overlap on unified memory; do not add them."
+      }
+    },
+    {
+      "run_id": "torch-profile-short-chunked-bf16-diagnostic",
+      "mode": "profile",
+      "config": {
+        "schema_version": 1,
+        "scope": "technical_feasibility_pilot_only",
+        "backend": "pytorch_peft",
+        "device": "mps",
+        "dtype": "bfloat16",
+        "attention_implementation": "sdpa",
+        "seed": 42,
+        "deterministic_algorithms": true,
+        "cpu_threads": 4,
+        "mps_memory_fraction": 0.9,
+        "lora_rank": 16,
+        "lora_alpha": 32,
+        "lora_dropout": 0.05,
+        "target_modules": [
+          "q_proj",
+          "k_proj",
+          "v_proj",
+          "o_proj"
+        ],
+        "micro_batch_size": 1,
+        "gradient_checkpointing": true,
+        "gradient_accumulation": 4,
+        "pilot_examples": 20,
+        "learning_rate": 0.0001,
+        "weight_decay": 0.0,
+        "adam_beta1": 0.9,
+        "adam_beta2": 0.999,
+        "gradient_clip_norm": 1.0,
+        "clear_mps_cache_each_microbatch": true,
+        "epochs": 1,
+        "selection": "shortest_20_eligible_training_examples_for_initial_smoke",
+        "max_training_tokens": null,
+        "notes": "Provisional technical-pilot settings, not final hyperparameters. BF16 forward/backward tensor kernels passed on this Mac; full-model feasibility remains unmeasured. Profile complete longer examples separately; never truncate. Accumulation is reduced from proposal 16 to 4 for five updates in a 20-example smoke run."
+      },
+      "weights_sha256": "dd924a11b4c220f385b51ffa522daea7c9f3d850e31b162bb5661df483c6d3ee",
+      "manifest_sha256": "c7e4d4811f3be6fc762681963d7e71bfd77900b4a64344f57c433979c4cef4af",
+      "loss_implementation": "chunked",
+      "loss_chunk_tokens": 128,
+      "status": "failed",
+      "examples": [
+        {
+          "id": "s1k-0548-f8828cbdd584",
+          "tokens": 712,
+          "supervised_tokens": 645
+        }
+      ],
+      "forward": {
+        "loss": 1.318692684173584,
+        "elapsed_seconds": 4.436231332831085
+      },
+      "error_type": "ValueError",
+      "error": "Invalid adapter gradients: tensors=224, present=224, all_finite=False, some_nonzero=False, missing=[], nonfinite=['base_model.model.model.layers.0.self_attn.q_proj.lora_A.default.weight', 'base_model.model.model.layers.0.self_attn.q_proj.lora_B.default.weight', 'base_model.model.model.layers.0.self_attn.k_proj.lora_A.default.weight', 'base_model.model.model.layers.0.self_attn.k_proj.lora_B.default.weight', 'base_model.model.model.layers.0.self_attn.v_proj.lora_A.default.weight', 'base_model.model.model.layers.0.self_attn.v_proj.lora_B.default.weight', 'base_model.model.model.layers.0.self_attn.o_proj.lora_A.default.weight', 'base_model.model.model.layers.0.self_attn.o_proj.lora_B.default.weight']",
+      "optimizer_updates_completed": 0,
+      "memory": {
+        "sampling_interval_seconds": 0.05,
+        "samples": 206,
+        "sampled_peak_mps_allocated_bytes": 3635060736,
+        "sampled_peak_mps_driver_bytes": 4601921536,
+        "process_lifetime_peak_rss_bytes": 462389248,
+        "sampling_error": null,
+        "note": "MPS values are sampled peaks, not exact peak VRAM. RSS and MPS memory overlap on unified memory; do not add them."
+      }
+    },
+    {
+      "run_id": "torch-profile-short-chunked-eager-bf16-v1",
+      "mode": "profile",
+      "config": {
+        "schema_version": 1,
+        "scope": "technical_feasibility_pilot_only",
+        "backend": "pytorch_peft",
+        "device": "mps",
+        "dtype": "bfloat16",
+        "attention_implementation": "eager",
+        "seed": 42,
+        "deterministic_algorithms": true,
+        "cpu_threads": 4,
+        "mps_memory_fraction": 0.9,
+        "lora_rank": 16,
+        "lora_alpha": 32,
+        "lora_dropout": 0.05,
+        "target_modules": [
+          "q_proj",
+          "k_proj",
+          "v_proj",
+          "o_proj"
+        ],
+        "micro_batch_size": 1,
+        "gradient_checkpointing": true,
+        "gradient_accumulation": 4,
+        "pilot_examples": 20,
+        "learning_rate": 0.0001,
+        "weight_decay": 0.0,
+        "adam_beta1": 0.9,
+        "adam_beta2": 0.999,
+        "gradient_clip_norm": 1.0,
+        "clear_mps_cache_each_microbatch": true,
+        "epochs": 1,
+        "selection": "shortest_20_eligible_training_examples_for_initial_smoke",
+        "max_training_tokens": null,
+        "notes": "Provisional technical-pilot settings, not final hyperparameters. BF16 forward/backward tensor kernels passed on this Mac; full-model feasibility remains unmeasured. Profile complete longer examples separately; never truncate. Accumulation is reduced from proposal 16 to 4 for five updates in a 20-example smoke run."
+      },
+      "weights_sha256": "dd924a11b4c220f385b51ffa522daea7c9f3d850e31b162bb5661df483c6d3ee",
+      "manifest_sha256": "8cff60ebedb075098954e2d24d04632b3c6b560d2fbba424936ae56073f840af",
+      "loss_implementation": "chunked",
+      "loss_chunk_tokens": 128,
+      "status": "complete",
+      "examples": [
+        {
+          "id": "s1k-0548-f8828cbdd584",
+          "tokens": 712,
+          "supervised_tokens": 645
+        }
+      ],
+      "forward": {
+        "loss": 1.3143686056137085,
+        "elapsed_seconds": 5.981289334129542
+      },
+      "summary": {
+        "status": "complete",
+        "mode": "single_forward_backward_no_optimizer_update",
+        "example_id": "s1k-0548-f8828cbdd584",
+        "input_tokens": 712,
+        "supervised_tokens": 645,
+        "loss": 1.3143686056137085,
+        "elapsed_seconds": 13.234228709014133,
+        "optimizer_updates": 0,
+        "gradients": {
+          "trainable_tensors": 224,
+          "tensors_with_grad": 224,
+          "all_present_gradients_finite": true,
+          "some_gradient_nonzero": true
+        }
+      },
+      "memory": {
+        "sampling_interval_seconds": 0.05,
+        "samples": 241,
+        "sampled_peak_mps_allocated_bytes": 3519767040,
+        "sampled_peak_mps_driver_bytes": 4658544640,
+        "process_lifetime_peak_rss_bytes": 593231872,
+        "sampling_error": null,
+        "note": "MPS values are sampled peaks, not exact peak VRAM. RSS and MPS memory overlap on unified memory; do not add them."
+      }
+    },
+    {
+      "run_id": "torch-profile-short-chunked-fp16-v1",
+      "mode": "profile",
+      "config": {
+        "schema_version": 1,
+        "scope": "technical_feasibility_pilot_only",
+        "backend": "pytorch_peft",
+        "device": "mps",
+        "dtype": "float16",
+        "attention_implementation": "sdpa",
+        "seed": 42,
+        "deterministic_algorithms": true,
+        "cpu_threads": 4,
+        "mps_memory_fraction": 0.9,
+        "lora_rank": 16,
+        "lora_alpha": 32,
+        "lora_dropout": 0.05,
+        "target_modules": [
+          "q_proj",
+          "k_proj",
+          "v_proj",
+          "o_proj"
+        ],
+        "micro_batch_size": 1,
+        "gradient_checkpointing": true,
+        "gradient_accumulation": 4,
+        "pilot_examples": 20,
+        "learning_rate": 0.0001,
+        "weight_decay": 0.0,
+        "adam_beta1": 0.9,
+        "adam_beta2": 0.999,
+        "gradient_clip_norm": 1.0,
+        "clear_mps_cache_each_microbatch": true,
+        "epochs": 1,
+        "selection": "shortest_20_eligible_training_examples_for_initial_smoke",
+        "max_training_tokens": null,
+        "notes": "Provisional technical-pilot settings, not final hyperparameters. BF16 forward/backward tensor kernels passed on this Mac; full-model feasibility remains unmeasured. Profile complete longer examples separately; never truncate. Accumulation is reduced from proposal 16 to 4 for five updates in a 20-example smoke run."
+      },
+      "weights_sha256": "dd924a11b4c220f385b51ffa522daea7c9f3d850e31b162bb5661df483c6d3ee",
+      "manifest_sha256": "996193aca1ebfd98c4afbe0bce4b1d8ff719dddcd0e62274c2cf9991b3fc324d",
+      "loss_implementation": "chunked",
+      "loss_chunk_tokens": 128,
+      "status": "failed",
+      "examples": [
+        {
+          "id": "s1k-0548-f8828cbdd584",
+          "tokens": 712,
+          "supervised_tokens": 645
+        }
+      ],
+      "forward": {
+        "loss": 1.3220195770263672,
+        "elapsed_seconds": 4.107751291943714
+      },
+      "error_type": "ValueError",
+      "error": "Invalid adapter gradients: tensors=224, present=224, all_finite=False, some_nonzero=False, missing=[], nonfinite=['base_model.model.model.layers.0.self_attn.q_proj.lora_A.default.weight', 'base_model.model.model.layers.0.self_attn.q_proj.lora_B.default.weight', 'base_model.model.model.layers.0.self_attn.k_proj.lora_A.default.weight', 'base_model.model.model.layers.0.self_attn.k_proj.lora_B.default.weight', 'base_model.model.model.layers.0.self_attn.v_proj.lora_A.default.weight', 'base_model.model.model.layers.0.self_attn.v_proj.lora_B.default.weight', 'base_model.model.model.layers.0.self_attn.o_proj.lora_A.default.weight', 'base_model.model.model.layers.0.self_attn.o_proj.lora_B.default.weight']",
+      "optimizer_updates_completed": 0,
+      "memory": {
+        "sampling_interval_seconds": 0.05,
+        "samples": 163,
+        "sampled_peak_mps_allocated_bytes": 3745992448,
+        "sampled_peak_mps_driver_bytes": 4627054592,
+        "process_lifetime_peak_rss_bytes": 3476619264,
+        "sampling_error": null,
+        "note": "MPS values are sampled peaks, not exact peak VRAM. RSS and MPS memory overlap on unified memory; do not add them."
+      }
+    },
+    {
+      "run_id": "torch-profile-short-chunked-v1",
+      "mode": "profile",
+      "config": {
+        "schema_version": 1,
+        "scope": "technical_feasibility_pilot_only",
+        "backend": "pytorch_peft",
+        "device": "mps",
+        "dtype": "bfloat16",
+        "attention_implementation": "sdpa",
+        "seed": 42,
+        "deterministic_algorithms": true,
+        "cpu_threads": 4,
+        "mps_memory_fraction": 0.9,
+        "lora_rank": 16,
+        "lora_alpha": 32,
+        "lora_dropout": 0.05,
+        "target_modules": [
+          "q_proj",
+          "k_proj",
+          "v_proj",
+          "o_proj"
+        ],
+        "micro_batch_size": 1,
+        "gradient_checkpointing": true,
+        "gradient_accumulation": 4,
+        "pilot_examples": 20,
+        "learning_rate": 0.0001,
+        "weight_decay": 0.0,
+        "adam_beta1": 0.9,
+        "adam_beta2": 0.999,
+        "gradient_clip_norm": 1.0,
+        "clear_mps_cache_each_microbatch": true,
+        "epochs": 1,
+        "selection": "shortest_20_eligible_training_examples_for_initial_smoke",
+        "max_training_tokens": null,
+        "notes": "Provisional technical-pilot settings, not final hyperparameters. BF16 forward/backward tensor kernels passed on this Mac; full-model feasibility remains unmeasured. Profile complete longer examples separately; never truncate. Accumulation is reduced from proposal 16 to 4 for five updates in a 20-example smoke run."
+      },
+      "weights_sha256": "dd924a11b4c220f385b51ffa522daea7c9f3d850e31b162bb5661df483c6d3ee",
+      "manifest_sha256": "1dafaa6cdb093d32fae1c74084ff7b64db45e6fc5edff1266961590ee44c72ec",
+      "loss_implementation": "chunked",
+      "loss_chunk_tokens": 128,
+      "status": "failed",
+      "examples": [
+        {
+          "id": "s1k-0548-f8828cbdd584",
+          "tokens": 712,
+          "supervised_tokens": 645
+        }
+      ],
+      "error_type": "ValueError",
+      "error": "Adapter gradients are missing, nonfinite or all zero",
+      "optimizer_updates_completed": 0,
+      "memory": {
+        "sampling_interval_seconds": 0.05,
+        "samples": 367,
+        "sampled_peak_mps_allocated_bytes": 3661880832,
+        "sampled_peak_mps_driver_bytes": 4599808000,
+        "process_lifetime_peak_rss_bytes": 520273920,
+        "sampling_error": null,
+        "note": "MPS values are sampled peaks, not exact peak VRAM. RSS and MPS memory overlap on unified memory; do not add them."
+      }
+    },
+    {
+      "run_id": "torch-profile-short-cpu-norm-v1",
+      "mode": "profile",
+      "config": {
+        "schema_version": 1,
+        "scope": "technical_feasibility_pilot_only",
+        "backend": "pytorch_peft",
+        "device": "mps",
+        "dtype": "bfloat16",
+        "attention_implementation": "s1_chunked",
+        "attention_chunk_tokens": 128,
+        "loss_implementation": "chunked",
+        "loss_chunk_tokens": 128,
+        "seed": 42,
+        "deterministic_algorithms": true,
+        "cpu_threads": 4,
+        "mps_memory_fraction": 0.9,
+        "lora_rank": 16,
+        "lora_alpha": 32,
+        "lora_dropout": 0.05,
+        "target_modules": [
+          "q_proj",
+          "k_proj",
+          "v_proj",
+          "o_proj"
+        ],
+        "micro_batch_size": 1,
+        "gradient_checkpointing": true,
+        "gradient_accumulation": 4,
+        "pilot_examples": 20,
+        "learning_rate": 0.0001,
+        "weight_decay": 0.0,
+        "adam_beta1": 0.9,
+        "adam_beta2": 0.999,
+        "gradient_clip_norm": 1.0,
+        "clear_mps_cache_each_microbatch": true,
+        "epochs": 1,
+        "selection": "shortest_20_eligible_training_examples_for_initial_smoke",
+        "max_training_tokens": null,
+        "notes": "Provisional technical-pilot settings, not final hyperparameters. Ordinary loss OOMed at 712 tokens, SDPA produced nonfinite gradients in BF16/FP16, ordinary eager attention OOMed at 2006 tokens. BF16 with checkpointed query and loss chunks passed a complete 2006-token backward profile. Profile longer complete examples separately; never truncate. Accumulation is reduced from proposal 16 to 4 for five updates in a 20-example smoke run."
+      },
+      "weights_sha256": "dd924a11b4c220f385b51ffa522daea7c9f3d850e31b162bb5661df483c6d3ee",
+      "manifest_sha256": "eeae01e8c2c4969c5147b68d28ab240b96f3929a9d486e913d163ce39f1a12d7",
+      "loss_implementation": "chunked",
+      "loss_chunk_tokens": 128,
+      "status": "complete",
+      "examples": [
+        {
+          "id": "s1k-0548-f8828cbdd584",
+          "tokens": 712,
+          "supervised_tokens": 645
+        }
+      ],
+      "forward": {
+        "loss": 1.3143686056137085,
+        "elapsed_seconds": 5.191689624916762
+      },
+      "summary": {
+        "status": "complete",
+        "mode": "single_forward_backward_no_optimizer_update",
+        "example_id": "s1k-0548-f8828cbdd584",
+        "input_tokens": 712,
+        "supervised_tokens": 645,
+        "loss": 1.3143686056137085,
+        "elapsed_seconds": 12.467019292060286,
+        "optimizer_updates": 0,
+        "gradients": {
+          "trainable_tensors": 224,
+          "tensors_with_grad": 224,
+          "all_present_gradients_finite": true,
+          "some_gradient_nonzero": true,
+          "gradient_norm_before_clip": 2082.7709394266813,
+          "maximum_absolute_gradient_before_clip": 145.36337280273438,
+          "gradient_clip_scale": 0.0004801296103138148,
+          "gradient_norm_implementation": "cpu_float64_hypot"
+        }
+      },
+      "memory": {
+        "sampling_interval_seconds": 0.05,
+        "samples": 231,
+        "sampled_peak_mps_allocated_bytes": 3468686592,
+        "sampled_peak_mps_driver_bytes": 4602970112,
+        "process_lifetime_peak_rss_bytes": 474841088,
+        "sampling_error": null,
+        "note": "MPS values are sampled peaks, not exact peak VRAM. RSS and MPS memory overlap on unified memory; do not add them."
+      }
+    },
+    {
+      "run_id": "torch-profile-short-fp16-cpu-norm-v1",
+      "mode": "profile",
+      "config": {
+        "schema_version": 1,
+        "scope": "technical_feasibility_pilot_only",
+        "backend": "pytorch_peft",
+        "device": "mps",
+        "dtype": "float16",
+        "attention_implementation": "s1_chunked",
+        "attention_chunk_tokens": 128,
+        "loss_implementation": "chunked",
+        "loss_chunk_tokens": 128,
+        "seed": 42,
+        "deterministic_algorithms": true,
+        "cpu_threads": 4,
+        "mps_memory_fraction": 0.9,
+        "lora_rank": 16,
+        "lora_alpha": 32,
+        "lora_dropout": 0.05,
+        "target_modules": [
+          "q_proj",
+          "k_proj",
+          "v_proj",
+          "o_proj"
+        ],
+        "micro_batch_size": 1,
+        "gradient_checkpointing": true,
+        "gradient_accumulation": 4,
+        "pilot_examples": 20,
+        "learning_rate": 0.0001,
+        "weight_decay": 0.0,
+        "adam_beta1": 0.9,
+        "adam_beta2": 0.999,
+        "gradient_clip_norm": 1.0,
+        "clear_mps_cache_each_microbatch": true,
+        "epochs": 1,
+        "selection": "shortest_20_eligible_training_examples_for_initial_smoke",
+        "max_training_tokens": null,
+        "notes": "Provisional technical-pilot settings, not final hyperparameters. Ordinary loss OOMed at 712 tokens, SDPA produced nonfinite gradients in BF16/FP16, ordinary eager attention OOMed at 2006 tokens. BF16 with checkpointed query and loss chunks passed a complete 2006-token backward profile. Profile longer complete examples separately; never truncate. Accumulation is reduced from proposal 16 to 4 for five updates in a 20-example smoke run."
+      },
+      "weights_sha256": "dd924a11b4c220f385b51ffa522daea7c9f3d850e31b162bb5661df483c6d3ee",
+      "manifest_sha256": "c0e9be34063d4f9e8a13907fff34fadf48f4d41054b89692b9b885a935c0d748",
+      "loss_implementation": "chunked",
+      "loss_chunk_tokens": 128,
+      "status": "failed",
+      "examples": [
+        {
+          "id": "s1k-0548-f8828cbdd584",
+          "tokens": 712,
+          "supervised_tokens": 645
+        }
+      ],
+      "error_type": "ValueError",
+      "error": "Nonfinite supervised-token loss",
+      "optimizer_updates_completed": 0,
+      "memory": {
+        "sampling_interval_seconds": 0.05,
+        "samples": 80,
+        "sampled_peak_mps_allocated_bytes": 3468686592,
+        "sampled_peak_mps_driver_bytes": 4392157184,
+        "process_lifetime_peak_rss_bytes": 3453730816,
+        "sampling_error": null,
+        "note": "MPS values are sampled peaks, not exact peak VRAM. RSS and MPS memory overlap on unified memory; do not add them."
+      }
+    },
+    {
+      "run_id": "torch-profile-short-v1",
+      "mode": "profile",
+      "config": {
+        "schema_version": 1,
+        "scope": "technical_feasibility_pilot_only",
+        "backend": "pytorch_peft",
+        "device": "mps",
+        "dtype": "bfloat16",
+        "attention_implementation": "sdpa",
+        "seed": 42,
+        "deterministic_algorithms": true,
+        "cpu_threads": 4,
+        "mps_memory_fraction": 0.9,
+        "lora_rank": 16,
+        "lora_alpha": 32,
+        "lora_dropout": 0.05,
+        "target_modules": [
+          "q_proj",
+          "k_proj",
+          "v_proj",
+          "o_proj"
+        ],
+        "micro_batch_size": 1,
+        "gradient_checkpointing": true,
+        "gradient_accumulation": 4,
+        "pilot_examples": 20,
+        "learning_rate": 0.0001,
+        "weight_decay": 0.0,
+        "adam_beta1": 0.9,
+        "adam_beta2": 0.999,
+        "gradient_clip_norm": 1.0,
+        "clear_mps_cache_each_microbatch": true,
+        "epochs": 1,
+        "selection": "shortest_20_eligible_training_examples_for_initial_smoke",
+        "max_training_tokens": null,
+        "notes": "Provisional technical-pilot settings, not final hyperparameters. BF16 forward/backward tensor kernels passed on this Mac; full-model feasibility remains unmeasured. Profile complete longer examples separately; never truncate. Accumulation is reduced from proposal 16 to 4 for five updates in a 20-example smoke run."
+      },
+      "weights_sha256": "dd924a11b4c220f385b51ffa522daea7c9f3d850e31b162bb5661df483c6d3ee",
+      "manifest_sha256": "2f825620da2b0c6f45a82e7822beaa77d6ec6927b903cd75f81ae68a4ad66643",
+      "loss_implementation": "standard",
+      "loss_chunk_tokens": null,
+      "status": "failed",
+      "examples": [
+        {
+          "id": "s1k-0548-f8828cbdd584",
+          "tokens": 712,
+          "supervised_tokens": 645
+        }
+      ],
+      "error_type": "RuntimeError",
+      "error": "MPS backend out of memory (MPS allocated: 5.07 GiB, other allocations: 32.67 MiB, max allowed: 4.80 GiB). Tried to allocate 256 bytes on shared pool. Use PYTORCH_MPS_HIGH_WATERMARK_RATIO=0.0 to disable upper limit for memory allocations (may cause system failure).",
+      "optimizer_updates_completed": 0,
+      "memory": {
+        "sampling_interval_seconds": 0.05,
+        "samples": 106,
+        "sampled_peak_mps_allocated_bytes": 4483469824,
+        "sampled_peak_mps_driver_bytes": 5495242752,
+        "process_lifetime_peak_rss_bytes": 592035840,
+        "sampling_error": null,
+        "note": "MPS values are sampled peaks, not exact peak VRAM. RSS and MPS memory overlap on unified memory; do not add them."
+      }
+    }
+  ],
+  "note": "Raw logs under ignored results/training_pilot; running_or_interrupted is not completion."
+}

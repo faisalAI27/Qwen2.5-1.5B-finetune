@@ -1,0 +1,56 @@
+{
+  "sources": {
+    "training_dataset": {
+      "id": "simplescaling/s1K",
+      "revision": "278d72baaa2b887a7e76a70a0ae254a5a45536e4",
+      "resolution_url": "https://huggingface.co/api/datasets/simplescaling/s1K"
+    },
+    "test_dataset": {
+      "id": "HuggingFaceH4/MATH-500",
+      "revision": "6e4ed1a2a79af7d8630a6b768ec859cb5af4d3be",
+      "resolution_url": "https://huggingface.co/api/datasets/HuggingFaceH4/MATH-500",
+      "split": "test"
+    },
+    "tokenizer": {
+      "id": "Qwen/Qwen2.5-1.5B-Instruct",
+      "revision": "989aa7980e4cf806f80c7fef2b1adb7bc71aa306"
+    }
+  },
+  "dataset_config_sha256": "f6c16df20b7269b749f3584099106f95e6173d216306a83175f304fb35a36a23",
+  "files": [
+    {
+      "path": "data/raw/s1k/data/train-00000-of-00001.parquet",
+      "bytes": 6884025,
+      "sha256": "899de0fb79be8465efb311aec94c4dcf9863c72684610b4626a8dacef2c2d2e7"
+    },
+    {
+      "path": "data/raw/tokenizer/tokenizer.json",
+      "bytes": 7031645,
+      "sha256": "c0382117ea329cdf097041132f6d735924b697924d6f6fc3945713e96ce87539"
+    },
+    {
+      "path": "data/raw/tokenizer/tokenizer_config.json",
+      "bytes": 7305,
+      "sha256": "5b5d4f65d0acd3b2d56a35b56d374a36cbc1c8fa5cf3b3febbbfabf22f359583"
+    },
+    {
+      "path": "data/raw/tokenizer/vocab.json",
+      "bytes": 2776833,
+      "sha256": "ca10d7e9fb3ed18575dd1e277a2579c16d108e32f27439684afa0e10b1440910"
+    },
+    {
+      "path": "data/raw/tokenizer/merges.txt",
+      "bytes": 1671839,
+      "sha256": "599bab54075088774b1733fde865d5bd747cbcc7a547c5bc12610e874e26f5e3"
+    },
+    {
+      "path": "data/raw/math500/questions.jsonl",
+      "bytes": 126402,
+      "sha256": "54e0a7131e4b8bb2167370915d4b921dddff7a83f9ffa5ba301c14901d50bd51"
+    }
+  ],
+  "split_manifest_sha256": "b05b266913beb7fd276861a6e193c112ed72ad37cf9a624e2a46c71f1bfcd77a",
+  "benchmark_manifest_sha256": "e7f8c63808b414672cf6f9b30944e2298d02a8e8977c3879298b9cc8273cd2c2",
+  "benchmark_transfer": "Original JSONL streamed; only question and ID persisted; all other fields discarded without logging",
+  "exclusions_applied": []
+}

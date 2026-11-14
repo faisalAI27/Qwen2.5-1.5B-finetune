@@ -1,0 +1,25 @@
+schema_version: 1
+scope: technical_feasibility_pilot_only
+backend: mlx_lm
+device: gpu
+base_dtype: bfloat16
+quantization: null
+seed: 42
+micro_batch_size: 1
+lora_rank: 16
+lora_alpha: 32
+lora_scale: 2.0
+lora_dropout: 0.05
+gradient_checkpointing: true
+loss_chunk_tokens: 128
+gradient_accumulation: 4
+pilot_examples: 20
+epochs: 1
+learning_rate: 0.0001
+weight_decay: 0.0
+gradient_clip_norm: 1.0
+maximum_acceptable_preclip_norm: 1000000.0
+memory_fraction: 0.9
+cache_limit_bytes: 268435456
+max_training_tokens: null
+notes: Technical pilot only. Same original BF16 checkpoint, no quantization. Explicit reference labels replace the upstream iterator/loss boundary mask. Scale 2.0 equals alpha/r; all 28 layers and only q/k/v/o. The generous preclip-norm abort guard is for numerical feasibility, not a model-selection score; the prior Torch norm near 1e35 must not lead to a training-success claim.
