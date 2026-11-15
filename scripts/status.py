@@ -1,6 +1,7 @@
 """Read local project progress without loading a model or starting any job."""
 
 import json
+from datetime import datetime, timezone
 from pathlib import Path
 import shutil
 import subprocess
@@ -55,8 +56,22 @@ def main():
                         size = stream.tell()
                         stream.seek(max(0, size - 8192))
                         lines = stream.read().decode().splitlines()
-                    if lines:
-                        record["last_microbatch"] = json.loads(lines[-1])
+                    rows = []
+                    for line in lines:
+                        try:
+                            rows.append(json.loads(line))
+                        except json.JSONDecodeError:
+                            # The first bounded-tail line or a concurrent final
+                            # write can be incomplete; retain complete records.
+                            continue
+                    if rows:
+                        record["last_microbatch"] = rows[-1]
+                        pending = rows[-1]["pending_step"]
+                        record["pending_step"] = pending if pending > record.get("completed_steps", 0) else None
+                        record["microbatches_logged_in_pending_step"] = (
+                            len({row["id"] for row in rows if row["pending_step"] == pending})
+                            if record["pending_step"] is not None else 0)
+                        record["last_progress_at_utc"] = datetime.fromtimestamp(progress.stat().st_mtime, timezone.utc).isoformat()
             runs.append(record)
     pipeline_path = root / "results/runtime/project_pipeline.json"
     pipeline = json.loads(pipeline_path.read_text()) if pipeline_path.exists() else None
@@ -66,7 +81,7 @@ def main():
     print(json.dumps({"free_disk_gib": round(shutil.disk_usage(root).free / 1024**3, 2), "training_runs": runs,
                       "continuation_pipeline": pipeline,
                       "test_protocol_frozen": (root / "manifests/evaluation_freeze.json").exists(),
-                      "note": "running_or_interrupted is not a claim that a process is alive; committed counts come from durable checkpoints."}, indent=2))
+                      "note": "running_or_interrupted is not a claim that a process is alive; committed counts come from durable checkpoints. Pending microbatches are not yet durable optimizer updates."}, indent=2))
 
 
 if __name__ == "__main__":

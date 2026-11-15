@@ -186,6 +186,13 @@ def main():
     freeze = json.loads((root / "manifests/evaluation_freeze.json").read_text())
     hardware_text = (root / "docs/hardware.md").read_text()
     hardware = hardware_text.split("## Measured specifications\n", 1)[1].split("The MPS working-set", 1)[0].strip()
+    power_pause = root / "results/environment/stage6-power-pause.json"
+    if power_pause.exists():
+        pause = json.loads(power_pause.read_text())
+        hardware += ("\n\nRecorded host power interruption during the first development trial: "
+                     + pause["interpretation"]
+                     + " This system-sleep interval is not active GPU compute. The raw power record is "
+                       "`results/environment/stage6-power-pause.json`; training-window timings and total calendar duration are distinct.")
     paper = make_paper(report, stage6, freeze, args.run_id, hardware)
     (root / "docs/paper.md").write_text(paper)
     cases = ["# Deterministically selected error cases", "", "Raw answers below are extracted model outputs, not repaired solutions.", ""]
