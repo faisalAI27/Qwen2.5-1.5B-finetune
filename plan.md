@@ -2,13 +2,15 @@
 
 **Project:** Resource-Constrained Adaptation of *s1: Simple test-time scaling*  
 **Team:** Faisal Imran · Muhammad Ibrahim · Hamza Saeed  
-**Planning status:** Stages 1–5 complete; Stage 6 full training active; Stages 7–10 implemented and queued for measured execution
+**Planning status:** Stages 1–5 complete; Stage 6 trial 1 active; review first-trial validation before any second trial or later stages
 **Primary specification:** `NLP_Proposal.pdf` (the group's approved project proposal)  
-**Last reviewed:** 2026-11-15
+**Last reviewed:** 2026-11-16
 
 **Hardware constraint (2026-11-14):** The user requires this local computer for the project: Apple M1 MacBook Air, 8 GB unified memory, 7-core GPU. PyTorch MPS passed a small tensor test outside the sandbox. See `docs/hardware.md` for measured specifications and limitations. Remote GPU access is not assumed; full-length backward feasibility and stable local pilot training are verified, while full training/evaluation remain in progress. Include the actual hardware and runtime measurements in the final report.
 
 **Execution instruction update (2026-11-14):** The user repeatedly asked to "go ahead and complete it" during execution. Continue through the remaining project work without requiring another go-ahead after each stage. Keep the scientific and measured hardware acceptance gates, record actual outcomes, and report any genuine blocker. The stage-by-stage stop-for-review wording below is original guidance, superseded by this instruction; it does not require pausing already authorized work. Independent tokenizer/format checks may proceed during a checkpoint-download wait, without claiming model or training success.
+
+**Execution update (2026-11-16):** The user now wants to review the first run and validation before deciding whether a second trial is worth the compute. Finish the current trial and all 100 development targets, verify its adapter, and compare held-out teacher-target NLL with the same original 1.5B base. Hold all later training and benchmark work for this decision. The original 32B paper is contextual, not a validation-loss threshold. The original scheduler is intentionally suspended; do not resume it automatically. See `docs/training_protocol.md` and `results/runtime/first_trial_review_request.json`. This update supersedes automatic progression beyond the first-trial review.
 
 > **Purpose of this file:** This is the executable project roadmap for a human developer working with Codex in VS Code. Complete **one stage at a time**, test the stage, update its checkbox, and stop for review. Do not ask Codex to build the entire project in one prompt.
 
@@ -275,7 +277,7 @@ The layout is a **target**, not a requirement to create every file in Stage 1. C
 
 ### Stage 6 — Development tuning and final LoRA training
 
-**Status:** [ ] Active: first full 896-row development trial running; two-trial selection and fresh 996-row final training are automated. MATH-500 remains unscored. See `docs/training_protocol.md`.
+**Status:** [ ] Active: first full 896-row trial continues through training and 100-row validation; verification and matched base validation are queued for review. Trial 2 and later stages are held pending that decision. MATH-500 remains unscored. See `docs/training_protocol.md`.
 
 **Goal:** Choose a stable setup on the **900/100** split, freeze it, and train the final model on all eligible original examples.
 
@@ -513,6 +515,8 @@ No unresolved choice is permission for Codex to select arbitrary values without 
 | 2026-11-15 | Stage 5 complete | Native MLX QLoRA/FP32 activation path; five stable pilot updates; exact fresh-process tensor/generation reload; complete 712–9,109-token backward profiles; 68 ordinary tests (4 skipped), 4 native tests passed | Source-traced 4-bit/group-64 conversion; 996 eligible examples retained without truncation; longest peak active allocation 5.833 GB; no final training/test accuracy yet; Stage 6 active |
 
 | 2026-11-15 | Stage 6 running / Stages 7–10 implementation | Resumable full trial active; 106 tests successful in the grader environment (6 optional/native skips); separate 7/7 grader tests pass; PEFT check covered in the inference environment; budget engine, sealed evaluation, paired analysis and report automation implemented | Native protocol/model results still pending; no benchmark scores or completion claim; current status via `scripts/status.py` |
+
+| 2026-11-16 | First-trial review boundary | Current training continues; only scheduler suspended; downstream controller honored PAUSE; dedicated verification/base-validation/review controller tested | User will decide on trial 2 after complete held-out validation; no paper-score threshold, benchmark access, training-config change or permanent trial cancellation |
 
 ---
 

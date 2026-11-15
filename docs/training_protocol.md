@@ -2,6 +2,16 @@
 
 Stage 6 uses the measured local MLX QLoRA path in [`hardware_pilot.md`](hardware_pilot.md). Full training has not been completed yet. No MATH-500 score guides this recipe.
 
+## User-requested first-trial review (2026-11-16)
+
+The user wants to inspect trial 1 and its validation before deciding whether trial 2 justifies its cost. **The current trial continues through all 896 training examples and all 100 development targets.** Only the original scheduler is suspended; the model worker is active. The downstream continuation controller has honored `results/runtime/PAUSE`. No second trial, recipe freeze, final retraining or test evaluation may start before the review decision.
+
+`review_first_trial.py` waits for the current worker to finish, verifies the exported adapter in a fresh native process, and evaluates the identical original-derived Q4/FP32 base on the same 100 held-out target sequences, without an optimizer or parameter updates. Both losses are weighted by identical supervised-token counts. It then produces `docs/first_trial_review.md` / `.json` and stops. Native base validation is queued, not yet measured; CPU tests cover matched denominators, incomplete-run rejection, and stopping before more training or benchmark access.
+
+The original paper's 32B MATH-500 accuracy is contextual; our 1.5B held-out teacher-target NLL is a different metric on a different dataset. We will not score MATH-500 to decide whether to run another learning rate. A decision to skip trial 2 must be documented as a compute-constrained single-trial change, not evidence that the unrun learning rate is equivalent. The original two-trial recipe below is preserved as the historical predeclared plan; no active training core/config has been changed.
+
+Review request/status/log: `results/runtime/first_trial_review_request.json`, `first_trial_review.json`, `first_trial_review.log`. Scheduler PID 7894 is intentionally stopped; training worker PID 7897 continues. Do not mistake the scheduler state for failed training or resume it automatically. Keep both the request and `PAUSE` marker until an explicit decision about the next run.
+
 ## Predeclared experiment
 
 `configs/train_development.yaml` specifies **two full trials**, learning rates **5e-5 and 1e-4**, each one epoch over the same **896 eligible training examples**. Both initialize fresh from the same source-traced 4-bit/group-64 affine conversion and the same seed-42 adapter initialization. Keep every complete sequence, with a 9,216-token ceiling, FP32 activations/adapters, rank 16 / alpha 32, attention q/k/v/o in all 28 layers, and dropout 0.05.

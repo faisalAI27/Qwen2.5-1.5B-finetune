@@ -6,7 +6,7 @@ Specification: [`NLP_Proposal.pdf`](NLP_Proposal.pdf). Roadmap and progress: [`p
 
 ## Current status
 
-Stages 1–5 are complete: setup/source pins, data/split/leakage audit, actual base-model generation, exhaustive training-format/mask validation and stable local QLoRA feasibility. **Stage 6 full training is running.** Stages 7–10 have tested implementations and are queued behind training and native development validation. No benchmark evaluation has run and there are no final accuracy scores yet. Read live progress with `python3 scripts/status.py`; the continuation controller records its stage in `results/runtime/project_pipeline.json`.
+Stages 1–5 are complete. **Stage 6 trial 1 is running through full training and validation.** At the user's request, further trials and downstream stages are held for a first-trial review. A dedicated controller will verify the first adapter, compare held-out teacher-target loss with the same original 1.5B base, and write `docs/first_trial_review.md`. No benchmark evaluation has run. Read progress with `python3 scripts/status.py`; see [`docs/training_protocol.md`](docs/training_protocol.md) for the current review boundary and the historical two-trial plan.
 
 The raw split is 900 train / 100 development (seed 42). Four confirmed benchmark-overlap examples are excluded through a separate eligibility manifest, leaving 896 train / 100 development and 996 eventual final-training examples before context filtering. See [`docs/data_audit.md`](docs/data_audit.md). All downstream training/development scripts must use `manifests/s1k_eligibility.json`, not all raw rows.
 
@@ -100,7 +100,7 @@ Muennighoff et al. (2025), [s1: Simple test-time scaling, original paper version
 
 The predeclared full workflow is running with `caffeinate -i .venv-mlx/bin/python scripts/run_development.py --prefix local-study-v1`. It checkpoints every update, keeps the last two checkpoints per run, selects from two full learning-rate trials using all 100 held-out development targets, and then retrains a fresh final adapter on 996 rows. Read [`docs/training_protocol.md`](docs/training_protocol.md) before changing settings. The full runs take many hours; pilot success is not a final result.
 
-A detached `complete_project.py` controller is active and waits for that existing training parent. It then executes held-out protocol validation, pre-test freeze, the complete nine-condition evaluation, grading, analysis and local paper/demo handoff. It logs to `results/runtime/project_pipeline.log` and halts with evidence on a failed gate. Keep the Mac plugged in and awake with the lid open. The workflow is not a reboot service; recovery instructions are in [`docs/reproducibility.md`](docs/reproducibility.md).
+The original `complete_project.py` controller is now paused at the user-requested first-trial review boundary. The dedicated `review_first_trial.py` controller will finish verification and matched base validation, then await a decision before any more training. Later stages remain implemented. Keep the Mac plugged in and awake with the lid open. The workflow is not a reboot service; recovery instructions are in [`docs/reproducibility.md`](docs/reproducibility.md).
 
 Read durable progress without loading a model:
 

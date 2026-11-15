@@ -75,6 +75,9 @@ def main():
             raise RuntimeError(f"{stage} exited {result.returncode}; previous evidence is retained")
         return result.returncode
     try:
+        if (runtime / "PAUSE").exists():
+            update("paused_by_local_marker", status="paused")
+            return
         stage6 = root / "results/study" / args.study_prefix / "stage6_summary.json"
         if args.wait_for_stage6:
             update("waiting_for_existing_stage6")

@@ -42,6 +42,12 @@ def main():
         parser.error("Use a simple run prefix")
     import yaml
     root = Path(__file__).resolve().parents[1]
+    review_request = root / "results/runtime/first_trial_review_request.json"
+    if review_request.exists():
+        request = json.loads(review_request.read_text())
+        if (request["run_id"] == args.prefix + "-trial-1"
+                and not request["second_trial_authorized_to_start"]):
+            raise SystemExit("User-requested first-trial review is active. Retain the current worker/review controller; do not start another trial or final training.")
     config_path = root / "configs/train_development.yaml"
     config = yaml.safe_load(config_path.read_text())
     eligibility = json.loads((root / "manifests/s1k_eligibility.json").read_text())

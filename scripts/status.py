@@ -78,8 +78,15 @@ def main():
     if pipeline:
         pipeline["controller_process_alive"] = process_alive(pipeline.get("controller_pid"), "scripts/complete_project.py")
         pipeline["original_training_parent_alive"] = process_alive(pipeline.get("stage6_pid"), "scripts/run_development.py")
+    review_path = root / "results/runtime/first_trial_review.json"
+    review = json.loads(review_path.read_text()) if review_path.exists() else None
+    if review:
+        review["controller_process_alive"] = process_alive(review.get("controller_pid"), "scripts/review_first_trial.py")
+    request_path = root / "results/runtime/first_trial_review_request.json"
+    request = json.loads(request_path.read_text()) if request_path.exists() else None
     print(json.dumps({"free_disk_gib": round(shutil.disk_usage(root).free / 1024**3, 2), "training_runs": runs,
                       "continuation_pipeline": pipeline,
+                      "first_trial_review": review, "first_trial_review_request": request,
                       "test_protocol_frozen": (root / "manifests/evaluation_freeze.json").exists(),
                       "note": "running_or_interrupted is not a claim that a process is alive; committed counts come from durable checkpoints. Pending microbatches are not yet durable optimizer updates."}, indent=2))
 

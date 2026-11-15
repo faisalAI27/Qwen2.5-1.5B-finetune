@@ -12,6 +12,8 @@ The converted base must be produced with `scripts/convert_mlx_base.py` from the 
 
 ## Running and monitoring
 
+**Current override (2026-11-16):** The user requested a review after trial 1 and validation. Its current worker continues, while the original scheduler is intentionally suspended and the downstream pipeline is paused. `review_first_trial.py` performs fresh-process verification and a matched 100-row read-only base validation, then writes the review and stops. Do not run the historical full-continuation commands below or remove `results/runtime/PAUSE` before an explicit next-step decision. See `training_protocol.md` and the review request/status files.
+
 Read current status without loading any model:
 
 ```bash
