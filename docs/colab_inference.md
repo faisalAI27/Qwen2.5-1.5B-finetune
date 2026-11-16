@@ -21,6 +21,8 @@ The assets ZIP stays outside GitHub. It contains the exact converted base (about
 
 If cloning is inconvenient, `python3 scripts/build_colab_bundle.py --include-code` creates a complete inference bundle instead. Set the notebook's bundle path accordingly. This is still a curated inference export, not the whole Mac environment.
 
+Some hosted Python installations cannot bootstrap pip with the standard `venv` module. Setup prints that failure and falls back to pinned `virtualenv==20.36.1`, which supplies its own pip seed. An already uploaded asset bundle can still be used with the updated launcher notebook: its recorded source commit and transferred file hashes remain authoritative inside the isolated workspace. No replacement asset upload is needed for this launcher fix.
+
 ## Session interruptions and results
 
 [Colab's free GPU availability and runtime limits vary](https://research.google.com/colaboratory/faq.html); a free notebook can run for at most 12 hours depending on availability/usage, and can end sooner. The notebook snapshots mutable CUDA state to its dedicated Drive folder every five minutes and after each stage, retaining its last two snapshots. In-flight work or outputs since the last snapshot may need recomputation. It uses normal notebook execution, without timeout-bypass mechanisms.
