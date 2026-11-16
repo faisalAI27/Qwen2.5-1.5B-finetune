@@ -2,7 +2,7 @@
 
 **Project:** Resource-Constrained Adaptation of *s1: Simple test-time scaling*  
 **Team:** Faisal Imran · Muhammad Ibrahim · Hamza Saeed  
-**Planning status:** Stages 1–5 complete; Stage 6 trial 1, validation and base comparison complete; awaiting the requested review before further training
+**Planning status:** Stages 1–6 complete under the approved single-run decision; proceed to Stage 7 with the existing 896-example adapter and no further training
 **Primary specification:** `NLP_Proposal.pdf` (the group's approved project proposal)  
 **Last reviewed:** 2026-11-16
 
@@ -11,6 +11,8 @@
 **Execution instruction update (2026-11-14):** The user repeatedly asked to "go ahead and complete it" during execution. Continue through the remaining project work without requiring another go-ahead after each stage. Keep the scientific and measured hardware acceptance gates, record actual outcomes, and report any genuine blocker. The stage-by-stage stop-for-review wording below is original guidance, superseded by this instruction; it does not require pausing already authorized work. Independent tokenizer/format checks may proceed during a checkpoint-download wait, without claiming model or training success.
 
 **Execution update (2026-11-16):** The user now wants to review the first run and validation before deciding whether a second trial is worth the compute. Finish the current trial and all 100 development targets, verify its adapter, and compare held-out teacher-target NLL with the same original 1.5B base. Hold all later training and benchmark work for this decision. The original 32B paper is contextual, not a validation-loss threshold. The original scheduler is intentionally suspended; do not resume it automatically. See `docs/training_protocol.md` and `results/runtime/first_trial_review_request.json`. This update supersedes automatic progression beyond the first-trial review.
+
+**Execution update (2026-11-16, accepted existing run):** The user has decided to proceed with this run only. Use the completed 896-example adapter directly for protocol validation and frozen benchmark evaluation. Skip trial 2 and defer the original fresh 996-example final retraining. Preserve the 100 held-out development examples and document this single-candidate, compute-constrained deviation in the report. `configs/single_run_decision.json` is the current choice. The earlier review hold is resolved for inference/evaluation; it does not authorize more training.
 
 > **Purpose of this file:** This is the executable project roadmap for a human developer working with Codex in VS Code. Complete **one stage at a time**, test the stage, update its checkbox, and stop for review. Do not ask Codex to build the entire project in one prompt.
 
@@ -277,7 +279,7 @@ The layout is a **target**, not a requirement to create every file in Stage 1. C
 
 ### Stage 6 — Development tuning and final LoRA training
 
-**Status:** [ ] First full 896-row trial, all 100 held-out targets, fresh-process reload and matched base validation complete. Base NLL 0.563623 → adapted 0.479717 (14.9% lower). Trial 2, final training and benchmark remain held for the requested review. See `docs/first_trial_review.md`.
+**Status:** [x] Complete under the user-approved existing-adapter route: 896 training examples, 100 held-out validation examples, verified reload, and accepted single candidate. Trial 2 skipped; fresh 996-example retraining deferred. See `configs/single_run_decision.json`.
 
 **Goal:** Choose a stable setup on the **900/100** split, freeze it, and train the final model on all eligible original examples.
 
@@ -286,7 +288,7 @@ The layout is a **target**, not a requirement to create every file in Stage 1. C
 - [ ] Tune using training + held-out 100-development examples only; log every trial, seed, and development metric.
 - [ ] Select one configuration using a declared rule (e.g., development loss and/or development answer accuracy); avoid cherry-picking.
 - [ ] Freeze configs, data processing, prompt protocol, stopping settings and evaluation grader before the MATH-500 run.
-- [ ] Reinitialize the **same original base model** (no continuing from the 900-example tuned adapter) and train on the full eligible s1K set with frozen settings.
+- [ ] Deferred by user: fresh all-eligible final retraining. Current evaluation uses the existing 896-example adapter, with this deviation documented.
 - [ ] Save LoRA adapter + tokenizer/config references; verify adapter merge/loading compatibility without silently replacing the base model.
 - [x] Report final eligible count if any examples were removed due to overlap or context limits.
 
@@ -296,7 +298,7 @@ The layout is a **target**, not a requirement to create every file in Stage 1. C
 
 ### Stage 7 — Budget-forcing engine and protocol tests
 
-**Status:** [ ] Engine and token/state-machine tests implemented; native selected-adapter development validation pending Stage 6. See `docs/budget_protocol.md`.
+**Status:** [ ] Active: validate all nine conditions on five held-out development questions using the accepted existing adapter. Engine/token tests passed; native outputs pending. See `docs/budget_protocol.md`.
 
 **Goal:** Implement **genuine structural budget forcing**, not a generic “think longer” prompt.
 
@@ -519,6 +521,8 @@ No unresolved choice is permission for Codex to select arbitrary values without 
 | 2026-11-16 | First-trial review boundary | Current training continues; only scheduler suspended; downstream controller honored PAUSE; dedicated verification/base-validation/review controller tested | User will decide on trial 2 after complete held-out validation; no paper-score threshold, benchmark access, training-config change or permanent trial cancellation |
 
 | 2026-11-16 | First-trial review ready | 896/896 training examples, 56 finite-gradient updates, 100/100 held-out targets, exact fresh-process reload; base/adapted NLL 0.563623/0.479717 over identical 555,371 targets | 14.9% relative NLL reduction is not benchmark accuracy; review artifacts verified; no second trial or final training started |
+
+| 2026-11-16 | Existing adapter accepted | User chose this run only; reviewed 896-example adapter adopted without training; 100 development examples stay held out | Trial 2 skipped and fresh 996-example retraining deferred; Stage 7 protocol validation next; benchmark remains sealed |
 
 ---
 

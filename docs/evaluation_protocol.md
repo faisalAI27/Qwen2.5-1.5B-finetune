@@ -1,6 +1,6 @@
 # Frozen evaluation and analysis
 
-The implementation is ready; actual MATH-500 evaluation is pending completed training and native development-protocol validation. There are no final scores yet.
+The completed first-run adapter is accepted for direct evaluation without further training. It trained on 896 examples; all 100 development examples remain held out. Native development-protocol validation is the current gate before MATH-500. There are no final scores yet.
 
 `freeze_evaluation.py` requires verified Stage 6 completion and all 45 held-out development generations. It records exact model/conversion/adapter/data/prompt/code hashes, runtime versions, token budgets, decoder, grader and analysis choices. It audits only already-sealed benchmark questions and context lengths. If benchmark answer artifacts already exist without a freeze, it refuses to create a retrospective freeze.
 

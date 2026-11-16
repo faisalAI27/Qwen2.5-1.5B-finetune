@@ -6,7 +6,7 @@ Specification: [`NLP_Proposal.pdf`](NLP_Proposal.pdf). Roadmap and progress: [`p
 
 ## Current status
 
-Stages 1–5 are complete. **Stage 6 trial 1 finished all 896 training examples, 56 updates and all 100 development examples.** Fresh-process adapter reload passed. Matched held-out teacher-target loss fell from 0.563623 for the original 1.5B base to 0.479717 for the adapted model, a 14.9% relative reduction; this is not benchmark accuracy. See [`docs/first_trial_review.md`](docs/first_trial_review.md). Further trials, final retraining and benchmark evaluation remain held for the user's requested review. Read status with `python3 scripts/status.py`.
+Stages 1–6 are complete under the user-approved **single existing adapter** decision. The completed model trained on **896 examples** and validated on **100 held-out examples**, with teacher-target NLL 0.563623 → 0.479717. **No second trial or fresh all-data retraining is scheduled.** We are proceeding to native budget-protocol validation, then frozen benchmark evaluation and reporting as gates pass. This departs from the original 996-example final-retraining plan; see [`configs/single_run_decision.json`](configs/single_run_decision.json) and [`docs/first_trial_review.md`](docs/first_trial_review.md). No benchmark score exists yet. Read progress with `python3 scripts/status.py`.
 
 The raw split is 900 train / 100 development (seed 42). Four confirmed benchmark-overlap examples are excluded through a separate eligibility manifest, leaving 896 train / 100 development and 996 eventual final-training examples before context filtering. See [`docs/data_audit.md`](docs/data_audit.md). All downstream training/development scripts must use `manifests/s1k_eligibility.json`, not all raw rows.
 
@@ -14,7 +14,7 @@ The target computer is an Apple M1 MacBook Air with 8 GB unified memory and a 7-
 
 Stage 3 completed 28/28 generations, with exact token-ID repeats within each run and across fresh model loads. The main development test used five questions, A/B prompts and two repetitions; unfinished answers are explicitly marked. No accuracy claim is made. See [`docs/stage3_report.md`](docs/stage3_report.md).
 
-Stage 4 formatting/masking checks passed for all 996 eligible examples. Complete examples are preserved without truncation; measured full-length feasibility supports the 9,216-token training ceiling. The latest grader-environment suite ran 106 tests successfully (five native GPU tests and one optional PEFT test skipped). The PEFT check passes in the inference environment; the five native tests passed before full training. See [`docs/training_format_audit.md`](docs/training_format_audit.md).
+Stage 4 formatting/masking checks passed for all 996 eligible examples. Complete examples are preserved without truncation; measured full-length feasibility supports the 9,216-token training ceiling. The latest grader-environment suite ran 111 tests successfully (five native GPU tests and one optional PEFT test skipped). The PEFT check passes in the inference environment; the five native tests passed before full training. See [`docs/training_format_audit.md`](docs/training_format_audit.md).
 
 The remaining workflow is documented in [`docs/budget_protocol.md`](docs/budget_protocol.md), [`docs/evaluation_protocol.md`](docs/evaluation_protocol.md) and [`docs/reproducibility.md`](docs/reproducibility.md). The final paper writer includes hardware specifications and measured runtime at the end of `docs/paper.md`, after actual results exist. It labels incomplete studies explicitly.
 
@@ -98,9 +98,7 @@ Muennighoff et al. (2025), [s1: Simple test-time scaling, original paper version
 
 ## Full local training and progress
 
-The historical full-workflow command is `caffeinate -i .venv-mlx/bin/python scripts/run_development.py --prefix local-study-v1`; the current first-trial review hold takes precedence, so do not restart it before a decision. It checkpoints every update, keeps the last two checkpoints per run, selects from two full learning-rate trials using all 100 held-out development targets, and then retrains a fresh final adapter on 996 rows. Read [`docs/training_protocol.md`](docs/training_protocol.md) before changing settings. The full runs take many hours; pilot success is not a final result.
-
-The original `complete_project.py` controller is paused at the user-requested first-trial review boundary. The dedicated `review_first_trial.py` controller completed verification and matched base validation, wrote the review, and exited successfully. No further model computation is scheduled until the next-step decision. Later stages remain implemented; recovery instructions are in [`docs/reproducibility.md`](docs/reproducibility.md).
+The current workflow uses the exported `local-study-v1-trial-1` adapter directly. Its 56 updates and all 896 complete examples are retained. The original two-trial scheduler is retired; do not resume it or launch fresh training. `complete_project.py` uses the adopted Stage 6 summary to start development protocol validation directly, with no training command. It then freezes evaluation, runs the nine conditions, grades locally, generates analysis and writes the local paper/demo handoff. Progress and logs are in `results/runtime/project_pipeline.json` and `project_pipeline.log`.
 
 Read durable progress without loading a model:
 

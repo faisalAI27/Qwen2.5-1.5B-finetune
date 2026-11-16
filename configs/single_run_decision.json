@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "decision_date_local": "2026-11-16",
+  "timezone": "Asia/Karachi",
+  "strategy": "evaluate_existing_adapter",
+  "study_prefix": "local-study-v1",
+  "selected_run_id": "local-study-v1-trial-1",
+  "additional_training_authorized": false,
+  "test_used_for_decision": false,
+  "user_instruction": "for now we will proceed with this run only",
+  "reason": "Use the reviewed completed adapter under the local compute constraint; no second trial or fresh all-data retraining for the current evaluation.",
+  "review_sha256": "66b301a678c3e2c186e23a45a128f3714dc83ff4afd90bdd6d73e91c0ef64846",
+  "limitations": [
+    "The alternative learning rate is untested.",
+    "The evaluated adapter trained on 896 eligible examples; all 100 development examples remain held out.",
+    "The original planned fresh retraining on 996 eligible examples is deferred.",
+    "Held-out teacher-target NLL improvement is not benchmark accuracy."
+  ]
+}

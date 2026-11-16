@@ -33,7 +33,7 @@ def main():
     training = json.loads((root / "manifests/training_freeze.json").read_text())
     stage6 = json.loads((root / "results/study" / args.study_prefix / "stage6_summary.json").read_text())
     if stage6["status"] != "complete" or stage6["test_scored"]:
-        raise ValueError("Verified final training must be available without prior test scoring")
+        raise ValueError("A verified evaluation adapter must be selected before any test scoring")
     directory = root / "results/protocol_dev" / args.development_run_id
     manifest = json.loads((directory / "manifest.json").read_text())
     protocol = json.loads((root / "configs/budget_protocol_v1.json").read_text())
@@ -60,7 +60,7 @@ def main():
         raise ValueError("A sealed question plus safety allowance exceeds model context; do not truncate it")
     grader = json.loads(subprocess.check_output([str(root / ".venv-eval/bin/python"), str(root / "scripts/grade_results.py"), "--print-manifest"],
                                                cwd=root, env={**os.environ, "PYTHONPATH": str(root / "src")}, text=True))
-    final = stage6["final_training"]
+    final = stage6.get("evaluation_model") or stage6["final_training"]
     files = ["configs/sources.json", "configs/budget_protocol_v1.json", "configs/prompts/baseline_v1.json", "configs/formatting.json",
              "manifests/training_freeze.json", "manifests/s1k_eligibility.json", "manifests/math500_questions.json",
              "data/raw/math500/questions.jsonl", "docs/baseline_smoke_summary.json",
@@ -69,6 +69,11 @@ def main():
              "src/s1small/mlx_runtime.py", "src/s1small/data.py", "src/s1small/formatting.py", "src/s1small/generate.py",
              "scripts/analyze_results.py", "scripts/report_project.py", "src/s1small/metrics.py",
              "requirements-eval-lock.txt", "requirements-mlx-lock.txt", "requirements-reporting-lock.txt"]
+    files.append(str(Path("results/study") / args.study_prefix / "stage6_summary.json"))
+    if "decision_path" in training:
+        if file_sha256(root / training["decision_path"]) != training["decision_sha256"]:
+            raise ValueError("The accepted model-selection decision changed")
+        files.extend([training["decision_path"], "scripts/freeze_existing_run.py", "scripts/review_first_trial.py", "docs/first_trial_review.json"])
     for adapter in (selected["adapter_directory"], final["adapter_directory"]):
         files.extend(str(Path(adapter) / name) for name in ("adapters.safetensors", "adapter_config.json", "source_provenance.json"))
     revision = json.loads((root / "configs/sources.json").read_text())["model"]["revision"]
@@ -80,6 +85,8 @@ def main():
               "generation_runtime": runtime_signature(),
               "protocol": {**protocol, "scope": "frozen_test_evaluation"}, "grader": grader,
               "final_adapter_directory": final["adapter_directory"], "selected_development_adapter_directory": selected["adapter_directory"],
+              "evaluated_training_examples": final["training_examples"],
+              "training_deviation": stage6.get("training_deviation"),
               "development_manifest_sha256": file_sha256(directory / "manifest.json"),
               "development_outputs_sha256": digest(records), "development_question_ids": expected_ids,
               "development_run_id": args.development_run_id,

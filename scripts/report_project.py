@@ -32,7 +32,7 @@ def publish_status(root, report, run_id):
     if plan.exists():
         lines = plan.read_text().splitlines()
         stage = None
-        statuses = {6: "[x] Complete: two full development trials, declared selection and fresh final adapter verified.",
+        statuses = {6: "[x] Complete under the recorded model-selection decision; exact training coverage and deviations are in the paper and training freeze.",
                     7: "[x] Complete: native held-out protocol validation and pre-test freeze recorded; see frozen diagnostics for learned-marker limitations.",
                     8: ("[x] Complete: all 4,500 planned model outputs and grades resolved." if coverage == "complete" else
                         "[ ] Partial: planned slots retained; unresolved outcomes and exact coverage reported."),
@@ -50,6 +50,18 @@ def publish_status(root, report, run_id):
 
 def make_paper(report, stage6, freeze, run_id, hardware):
     complete = report["status"] == "complete"
+    reused = stage6.get("completion_scope") == "existing_adapter_selected_for_evaluation"
+    model = stage6.get("evaluation_model") or stage6["final_training"]
+    selection_text = (
+        f"One completed one-epoch trial at learning rate {stage6['selected_learning_rate']} was accepted after held-out validation and a matched original-base NLL comparison. "
+        f"The existing {model['training_examples']}-example adapter is used directly for evaluation. "
+        "The second learning-rate trial and fresh 996-example retraining were deferred by user decision before benchmark access to limit local compute. "
+        "No hyperparameter optimization or equivalence with the unrun learning rate is claimed. "
+        "The 100 development examples remain held out from the evaluated adapter. "
+        if reused else
+        "Two predeclared one-epoch development trials use learning rates 5e-5 and 1e-4. "
+        "The lowest complete 100-example development NLL selects the recipe, with an exact tie favoring the lower rate. "
+        f"The selected learning rate was {stage6['selected_learning_rate']}; final training starts fresh on all 996 eligible examples. ")
     scores = report["conditions"]
     c, b = scores["C"]["accuracy"], scores["B"]["accuracy"]
     abstract_result = (f"The natural reasoning condition achieved {100*c:.2f}% accuracy, compared with {100*b:.2f}% for the reasoning-prompted base. "
@@ -60,7 +72,8 @@ def make_paper(report, stage6, freeze, run_id, hardware):
              "Faisal Imran · Muhammad Ibrahim · Hamza Saeed", "", "**Research draft.** Venue-specific submission formatting has not been selected.", "",
              "## Abstract", "",
              "We study an adaptation of s1-style supervised reasoning and test-time budget forcing to Qwen2.5-1.5B-Instruct on a local Apple M1 MacBook Air with 8 GB unified memory. "
-             "The study uses original s1K, a fixed development split, conservative benchmark-overlap exclusions, and fresh final retraining after development selection. "
+             "The study uses original s1K, a fixed development split and conservative benchmark-overlap exclusions. "
+             + ("The completed 896-example adapter is evaluated directly under a documented single-run compute constraint. " if reused else "Fresh final retraining follows development selection. ") +
              "Measured low-precision numerical failures and memory costs motivated a source-traced four-bit MLX base with FP32 activations. " + abstract_result,
              "", "## 1. Introduction", "",
              "Test-time reasoning can trade additional computation for answer quality, but the trade-off need not transfer from a large full-model adaptation to a small low-rank adaptation. "
@@ -70,18 +83,16 @@ def make_paper(report, stage6, freeze, run_id, hardware):
              "Muennighoff et al. introduced the s1 data-and-budget-forcing recipe [1,2]. We retain original s1K rather than the later s1K-1.1 release, and adapt the recipe to the smaller Qwen checkpoint [3]. "
              "The held-out evaluation uses the fixed MATH-500 test split [4]. Mathematical equivalence is evaluated locally with a pinned Math-Verify stack [5].",
              "", "## 3. Method", "",
-             "The immutable original split is 900 train / 100 development, seed 42. Four reviewed benchmark-overlap examples are excluded separately, leaving 896 training, 100 development and 996 final-training examples. "
+             "The immutable original split is 900 train / 100 development, seed 42. Four reviewed benchmark-overlap examples are excluded separately, leaving 896 training examples and 100 development examples (996 eligible in total). "
              "Lexical screening cannot rule out paraphrase overlap or pretraining contamination. One normalized duplicate question pair remains entirely in training and is disclosed. "
              "All complete original teacher reasoning and `attempt` targets are preserved; their mathematical correctness is not assumed. Assistant-only causal loss masks prompts and added padding.", "",
              "LoRA targets q/k/v/o in all 28 attention layers, rank 16, alpha 32 (MLX scale 2.0), dropout 0.05 and 4,358,144 FP32 trainable parameters. "
              "The same pinned base is locally converted to four-bit affine weights with group size 64. FP32 activations, decoder checkpointing and chunked vocabulary loss preserve full sequences. "
              "The 9,216-token ceiling covers all 996 eligible examples; no sequence is truncated or excluded for length. "
              "Both pretrained and adapted final evaluation use the identical conversion and activation precision.", "",
-             "Two predeclared one-epoch development trials use learning rates 5e-5 and 1e-4, micro-batch 1, accumulation 16, bias-corrected AdamW and token-weighted loss. "
-             "The lowest complete 100-example development negative log-likelihood selects the recipe; an exact tie favors the lower learning rate. "
-             f"The selected learning rate was {stage6['selected_learning_rate']}. Final training starts from fresh base/adapter initialization on all 996 examples. "
+             selection_text + "Training uses micro-batch 1, accumulation 16, bias-corrected AdamW and token-weighted loss. "
              "Budget decisions use the selected 896-row adapter, keeping those 100 development examples held out for protocol development. "
-             "The final all-data adapter does not choose inference settings. All choices freeze before benchmark answers are opened for evaluation.", "",
+             "All choices freeze before benchmark answers are opened for evaluation.", "",
              "A/B are direct and reasoning-prompted pretrained baselines. C uses natural reasoning termination in a two-phase s1 protocol. "
              "D256/D512/D1024/D2048 bound reasoning; E1/E2 intercept up to one/two actual reasoning stops and append a visible newline plus `Wait`. "
              "All structured conditions use a common training-format answer readout. EOS and im_start are recorded separately. "
@@ -145,7 +156,10 @@ def make_paper(report, stage6, freeze, run_id, hardware):
               "7. Original simplescaling/s1K, revision 278d72baaa2b887a7e76a70a0ae254a5a45536e4. https://huggingface.co/datasets/simplescaling/s1K",
               "", "## Appendix A. Hardware and measured training runtime", "", hardware, "",
               "| Run | Training examples | Committed training seconds | Committed compute hours | Input tokens/second | Peak active MLX GiB |", "|---|---:|---:|---:|---:|---:|"]
-    for row in [*stage6["trials"], stage6["final_training"]]:
+    training_runs = [*stage6["trials"]]
+    if stage6.get("final_training") is not None:
+        training_runs.append(stage6["final_training"])
+    for row in training_runs:
         cursor = row["training_cursor"]
         seconds = cursor["training_seconds_committed"]
         lines.append(f"| {row['run_id']} | {row['training_examples']} | {seconds:.1f} | {seconds/3600:.3f} | {cursor['input_tokens_committed']/seconds:.2f} | {row['peak_mlx_active_bytes']/1024**3:.3f} |")
@@ -211,7 +225,7 @@ def main():
     (root / "docs/error_cases.md").write_text("\n".join(cases))
     (root / "docs/demo_notes.md").write_text("# Presentation and demonstration notes\n\n"
         "1. State the small-model accuracy/cost question and distinguish this adaptation from original s1.\n"
-        "2. Explain the immutable split, four overlap exclusions, assistant-only labels and fresh final training.\n"
+        "2. Explain the immutable split, four overlap exclusions, assistant-only labels and actual training coverage/deviations.\n"
         "3. Show the complete nine-condition accuracy table and paired intervals from `results.md`.\n"
         "4. Show measured tokens/latency and both rescued and spoiled examples from `error_cases.md`.\n"
         "5. Present M1/8 GB hardware, actual runtime, numerical failures and the justified QLoRA/FP32 path.\n"
@@ -221,7 +235,8 @@ def main():
         "The demo uses the frozen final model/decoder and logs visible model segments and injected controls separately.\n")
     handoff = {"status": report["status"], "paper": "docs/paper.md", "results": "docs/results.md",
                "figures": str((directory / "figures").relative_to(root)), "error_cases": "docs/error_cases.md",
-               "demo_notes": "docs/demo_notes.md", "final_adapter": stage6["final_training"]["adapter_directory"],
+               "demo_notes": "docs/demo_notes.md", "final_adapter": (stage6.get("evaluation_model") or stage6["final_training"])["adapter_directory"],
+               "training_deviation": stage6.get("training_deviation"),
                "evaluation_freeze_sha256": file_sha256(root / "manifests/evaluation_freeze.json"),
                "free_disk_gib_at_handoff": shutil.disk_usage(root).free / 1024**3,
                "generated_at_utc": datetime.now(timezone.utc).isoformat(),

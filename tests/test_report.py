@@ -28,3 +28,12 @@ class ReportTests(unittest.TestCase):
         self.assertNotIn("condition achieved", paper)
         self.assertIn("No internal reasoning role-marker stop", paper)
         self.assertIn("Appendix A. Hardware", paper)
+        existing = {**stage6, "completion_scope": "existing_adapter_selected_for_evaluation",
+                    "evaluation_model": {**row, "training_examples": 896}, "final_training": None,
+                    "trials": [{**row, "training_examples": 896}]}
+        single_run_paper = module.make_paper(report, existing, freeze, "synthetic", "Synthetic hardware fixture")
+        self.assertIn("existing 896-example adapter is used directly", single_run_paper)
+        self.assertIn("retraining were deferred by user decision", single_run_paper)
+        self.assertNotIn("Two predeclared one-epoch development trials", single_run_paper)
+        self.assertNotIn("Final training starts from fresh", single_run_paper)
+        self.assertEqual(single_run_paper.count("| synthetic |"), 1)

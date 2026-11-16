@@ -12,7 +12,7 @@ The converted base must be produced with `scripts/convert_mlx_base.py` from the 
 
 ## Running and monitoring
 
-**Current override (2026-11-16):** The user requested a review after trial 1 and validation. Trial 1, its 100-row validation, fresh-process verification and the matched 100-row read-only base validation are now complete. The review is in `docs/first_trial_review.md`; the review controller stopped successfully. The original scheduler remains intentionally suspended and the downstream pipeline is paused. Do not run the historical full-continuation commands below or remove `results/runtime/PAUSE` before an explicit next-step decision. See `training_protocol.md` and the review request/status files.
+**Current override (2026-11-16):** The user accepted the completed first run for direct evaluation, without any further training. `configs/single_run_decision.json` records this choice, and `scripts/freeze_existing_run.py` adopts its verified 896-example adapter. Its 100 development examples remain held out. `complete_project.py` uses the adopted Stage 6 summary and starts with protocol validation. The old two-trial scheduler is retired; do not restart it. The review PAUSE marker is archived as resolved. The original review request is retained as history, not permission for another trial. Historical training/recovery commands below do not apply to the current inference-only continuation.
 
 Read current status without loading any model:
 

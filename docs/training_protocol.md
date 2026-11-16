@@ -1,8 +1,16 @@
-# Development tuning and fresh final training
+# Training protocol and accepted single-run adapter
 
-Stage 6 uses the measured local MLX QLoRA path in [`hardware_pilot.md`](hardware_pilot.md). The first development trial, its validation, fresh-process reload and matched base validation are complete. Final all-data training has not run. No MATH-500 score guides this recipe.
+Stage 6 uses the measured local MLX QLoRA path in [`hardware_pilot.md`](hardware_pilot.md). The first development trial, its validation, fresh-process reload and matched base validation are complete. Final all-data training has not run and is deferred by the current decision. No MATH-500 score guides this recipe.
 
-## User-requested first-trial review (2026-11-16)
+## Current decision: use the existing run only (2026-11-16)
+
+The user accepted the first run and instructed us to proceed with that run only. **Evaluate the existing 896-example adapter directly. Do not launch trial 2 or fresh 996-example retraining.** All 100 development examples remain held out from this evaluated adapter. This is a compute-constrained single-candidate study, not a learning-rate optimization or a claim that the unrun alternative is equivalent.
+
+`configs/single_run_decision.json` binds this decision to the completed review. `freeze_existing_run.py` verified complete training/validation, the review's checksums, unchanged training code, final checkpoint/export checksums and absence of benchmark access. It writes the training freeze and an adopted Stage 6 summary with `evaluation_model` set to the actual completed run and **`final_training: null`**. It never invokes training. The original two-rate YAML and original run provenance are preserved as history.
+
+The prior review boundary is resolved for inference/evaluation. The old suspended scheduler is retired, not resumed; its request remains historical and still prohibits trial 2. Continue with `complete_project.py`, which sees the adopted Stage 6 summary and skips its training branch. Native held-out protocol checks must still pass before the separate evaluation freeze and benchmark answers. The paper records 896 actual training examples, a deferred 996-example final pass, and one tested learning rate. The historical review and original design below are retained for audit.
+
+## Historical first-trial review boundary (resolved 2026-11-16)
 
 The user wants to inspect trial 1 and its validation before deciding whether trial 2 justifies its cost. **The first trial completed all 896 training examples and all 100 development targets.** The original scheduler remains intentionally suspended; the training worker has finished. The downstream continuation controller honored `results/runtime/PAUSE`. No second trial, recipe freeze, final retraining or test evaluation may start before the review decision.
 
@@ -32,7 +40,7 @@ Each example's dropout RNG seed is derived from SHA-256 of seed, epoch and immut
 
 The complete runner smoke trained four complete original examples (22,097 input tokens, maximum 8,165) with two bias-corrected AdamW updates, evaluated two development examples, saved checkpoints, reloaded identical adapter tensors/generation in a fresh process, and exercised the completed-checkpoint resume path. It is explicitly `technical_smoke`, and cannot be selected as a full development trial. Evidence: `results/training/full-runner-smoke-v1/`; tracked export: `full_runner_smoke.json`.
 
-## Commands
+## Historical full-training command (superseded)
 
 Run from this project root in a native GPU-enabled terminal:
 
@@ -46,4 +54,4 @@ Use the provided loader for all inference: the adapter is **MLX format** and dep
 
 ## Held-out inference-protocol development
 
-Budget/marker/answer-allowance decisions use the **selected 896-row development adapter**, whose 100 development rows remain held out. The final 996-row adapter is used for the frozen benchmark only. Training settings freeze before fresh final retraining; inference settings freeze separately before test, using the development adapter even if final training has already finished. This preserves the information boundary without relying on a development set that the final adapter has seen. Final-adapter technical reload checks do not choose settings or calculate accuracy.
+Budget/marker/answer-allowance decisions use the **selected 896-row development adapter**, whose 100 development rows remain held out. Under the current single-run decision, the same accepted 896-row adapter is used for the frozen benchmark; no all-data adapter exists. Training settings freeze before fresh final retraining; inference settings freeze separately before test, using the development adapter even if final training has already finished. This preserves the information boundary without relying on a development set that the final adapter has seen. Final-adapter technical reload checks do not choose settings or calculate accuracy.
