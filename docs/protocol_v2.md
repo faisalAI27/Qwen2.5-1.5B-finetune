@@ -28,3 +28,7 @@ caffeinate -i .venv-mlx/bin/python scripts/complete_project.py \
 ```
 
 This command uses the already selected Stage 6 adapter and invokes no training. The report writer discloses the failed calibration, bounded probes, common injected label, single-run model choice and actual training coverage.
+
+## Completed Mac validation
+
+The full revised run finished all 45 outputs, with 40 extractable answers, zero reasoning-phase im_start stops, seven reasoning-EOS outputs and two outputs with actual Wait continuations. These are compatibility/extraction counts, not correctness scores. The Mac evaluation freeze is now saved and MATH-500 generation is active. Its protocol and inference source files are immutable during the benchmark. The proposed Colab route is a separately declared CUDA replication; it must not modify or merge into this Mac run.

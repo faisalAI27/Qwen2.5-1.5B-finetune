@@ -2,7 +2,7 @@
 
 **Project:** Resource-Constrained Adaptation of *s1: Simple test-time scaling*  
 **Team:** Faisal Imran · Muhammad Ibrahim · Hamza Saeed  
-**Planning status:** Stages 1–6 complete under the approved single-run decision; proceed to Stage 7 with the existing 896-example adapter and no further training
+**Planning status:** Stages 1–7 complete under the single-run decision; frozen Mac MATH-500 generation active; optional Colab CUDA replication being prepared without training
 **Primary specification:** `NLP_Proposal.pdf` (the group's approved project proposal)  
 **Last reviewed:** 2026-11-16
 
@@ -13,6 +13,8 @@
 **Execution update (2026-11-16):** The user now wants to review the first run and validation before deciding whether a second trial is worth the compute. Finish the current trial and all 100 development targets, verify its adapter, and compare held-out teacher-target NLL with the same original 1.5B base. Hold all later training and benchmark work for this decision. The original 32B paper is contextual, not a validation-loss threshold. The original scheduler is intentionally suspended; do not resume it automatically. See `docs/training_protocol.md` and `results/runtime/first_trial_review_request.json`. This update supersedes automatic progression beyond the first-trial review.
 
 **Execution update (2026-11-16, accepted existing run):** The user has decided to proceed with this run only. Use the completed 896-example adapter directly for protocol validation and frozen benchmark evaluation. Skip trial 2 and defer the original fresh 996-example final retraining. Preserve the 100 held-out development examples and document this single-candidate, compute-constrained deviation in the report. `configs/single_run_decision.json` is the current choice. The earlier review hold is resolved for inference/evaluation; it does not authorize more training.
+
+**Hardware extension (2026-11-16):** The user requested Colab free-GPU inference in parallel with the ongoing Mac run and asked about GitHub transfer. Use T4/CUDA for the prepared route; training remains finished on the Mac. Preserve exact Q4 base/adapter/tokenizer/protocol, validate CUDA on held-out data before a separate CUDA freeze, and report CUDA hardware/timing independently. Do not combine Metal and CUDA outputs or retrain. The small code repository can be pushed/cloned separately from the approximately 0.9 GB Drive asset bundle. No push or cloud upload is authorized/performed by this preparation. See `docs/colab_inference.md`.
 
 > **Purpose of this file:** This is the executable project roadmap for a human developer working with Codex in VS Code. Complete **one stage at a time**, test the stage, update its checkbox, and stop for review. Do not ask Codex to build the entire project in one prompt.
 
@@ -298,7 +300,7 @@ The layout is a **target**, not a requirement to create every file in Stage 1. C
 
 ### Stage 7 — Budget-forcing engine and protocol tests
 
-**Status:** [ ] V1 native run and 15 diagnostics complete. The common Final Answer label improved concise readout in five development probes; correctness is unscored. V2 config/code/tests are ready for a fresh 45-output native validation before any benchmark freeze. See `docs/protocol_v2.md`.
+**Status:** [x] Complete: all 45 v2 native outputs executed, 40 extracted answers, common declared readout; marker limitations and v1 failure retained. Evaluation frozen before benchmark access. See `docs/protocol_v2.md`.
 
 **Goal:** Implement **genuine structural budget forcing**, not a generic “think longer” prompt.
 
@@ -318,7 +320,7 @@ The layout is a **target**, not a requirement to create every file in Stage 1. C
 
 ### Stage 8 — Frozen MATH-500 test evaluation
 
-**Status:** [ ] Freeze, fixed-slot generation and local grader implemented and tested; benchmark remains sealed. See `docs/evaluation_protocol.md`.
+**Status:** [ ] Active: settings frozen and all 4,500 slots initialized; Mac MATH-500 generation running. Correctness grading follows generation. See `docs/evaluation_protocol.md`.
 
 **Goal:** Evaluate every predeclared condition on exactly the same benchmark, without test-set tuning.
 
@@ -527,6 +529,8 @@ No unresolved choice is permission for Codex to select arbitrary values without 
 | 2026-11-16 | Stage 7 readout investigation | At 43/45 native outputs, five extractable direct answers and zero extractable structured answers; immediate role stops/repetition observed | Added native readout gate before benchmark freeze; bounded same-adapter development-only prefix probes queued; no retraining or benchmark access |
 
 | 2026-11-16 | Stage 7 readout revision ready | V1 complete: 45 outputs, zero extracted structured answers; 15 same-adapter probes complete; Final Answer label gave five short EOS-terminated bodies | V1 evidence retained; v2 common readout and explicit extraction provenance prepared; full native 45-output revalidation required; no training or benchmark access |
+
+| 2026-11-16 | Colab T4 handoff prepared | Pinned MLX 0.32.4 CUDA 12 route reuses exact Q4 base/adapter; isolated notebook, checksum bundle, held-out smoke/parity gate and resumable Drive snapshots implemented | Mac inference continues; no training, remote push or upload; actual allocated-GPU validation remains pending |
 
 ---
 
