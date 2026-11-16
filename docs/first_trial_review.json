@@ -1,0 +1,28 @@
+{
+  "status": "awaiting_user_decision",
+  "run_id": "local-study-v1-trial-1",
+  "training_examples": 896,
+  "development_examples": 100,
+  "learning_rate": 5e-05,
+  "fresh_process_reload_identical": true,
+  "comparison": {
+    "base_development_nll": 0.5636226722800795,
+    "adapted_development_nll": 0.4797165290945863,
+    "nll_difference_adapted_minus_base": -0.08390614318549316,
+    "relative_nll_reduction": 0.14886935411249375,
+    "interpretation": "Lower teacher-target NLL indicates better prediction of held-out supplied solutions; it is not mathematical answer accuracy or proof correctness."
+  },
+  "second_trial_started": false,
+  "test_used_for_selection": false,
+  "paper_reference": {
+    "url": "https://arxiv.org/html/2501.19393v1",
+    "model_parameters_billions": 32,
+    "math500_accuracy_without_budget_forcing": 0.926,
+    "math500_accuracy_with_budget_forcing": 0.93,
+    "comparability": "Published 32B benchmark accuracy is contextual only; local 1.5B held-out teacher NLL is a different metric and dataset."
+  },
+  "source_hashes": {
+    "trial_summary": "a0fcb2ea961ef85837513a5151c5e0b274b984660fc3ec1c667f7f8726fcd270",
+    "base_validation": "5bdb1b497e3507cf43dfd0ce4e1ddf252f17b758272808fc77af89fc89f4fa25"
+  }
+}

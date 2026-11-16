@@ -6,7 +6,7 @@ Specification: [`NLP_Proposal.pdf`](NLP_Proposal.pdf). Roadmap and progress: [`p
 
 ## Current status
 
-Stages 1–5 are complete. **Stage 6 trial 1 is running through full training and validation.** At the user's request, further trials and downstream stages are held for a first-trial review. A dedicated controller will verify the first adapter, compare held-out teacher-target loss with the same original 1.5B base, and write `docs/first_trial_review.md`. No benchmark evaluation has run. Read progress with `python3 scripts/status.py`; see [`docs/training_protocol.md`](docs/training_protocol.md) for the current review boundary and the historical two-trial plan.
+Stages 1–5 are complete. **Stage 6 trial 1 finished all 896 training examples, 56 updates and all 100 development examples.** Fresh-process adapter reload passed. Matched held-out teacher-target loss fell from 0.563623 for the original 1.5B base to 0.479717 for the adapted model, a 14.9% relative reduction; this is not benchmark accuracy. See [`docs/first_trial_review.md`](docs/first_trial_review.md). Further trials, final retraining and benchmark evaluation remain held for the user's requested review. Read status with `python3 scripts/status.py`.
 
 The raw split is 900 train / 100 development (seed 42). Four confirmed benchmark-overlap examples are excluded through a separate eligibility manifest, leaving 896 train / 100 development and 996 eventual final-training examples before context filtering. See [`docs/data_audit.md`](docs/data_audit.md). All downstream training/development scripts must use `manifests/s1k_eligibility.json`, not all raw rows.
 
@@ -98,9 +98,9 @@ Muennighoff et al. (2025), [s1: Simple test-time scaling, original paper version
 
 ## Full local training and progress
 
-The predeclared full workflow is running with `caffeinate -i .venv-mlx/bin/python scripts/run_development.py --prefix local-study-v1`. It checkpoints every update, keeps the last two checkpoints per run, selects from two full learning-rate trials using all 100 held-out development targets, and then retrains a fresh final adapter on 996 rows. Read [`docs/training_protocol.md`](docs/training_protocol.md) before changing settings. The full runs take many hours; pilot success is not a final result.
+The historical full-workflow command is `caffeinate -i .venv-mlx/bin/python scripts/run_development.py --prefix local-study-v1`; the current first-trial review hold takes precedence, so do not restart it before a decision. It checkpoints every update, keeps the last two checkpoints per run, selects from two full learning-rate trials using all 100 held-out development targets, and then retrains a fresh final adapter on 996 rows. Read [`docs/training_protocol.md`](docs/training_protocol.md) before changing settings. The full runs take many hours; pilot success is not a final result.
 
-The original `complete_project.py` controller is now paused at the user-requested first-trial review boundary. The dedicated `review_first_trial.py` controller will finish verification and matched base validation, then await a decision before any more training. Later stages remain implemented. Keep the Mac plugged in and awake with the lid open. The workflow is not a reboot service; recovery instructions are in [`docs/reproducibility.md`](docs/reproducibility.md).
+The original `complete_project.py` controller is paused at the user-requested first-trial review boundary. The dedicated `review_first_trial.py` controller completed verification and matched base validation, wrote the review, and exited successfully. No further model computation is scheduled until the next-step decision. Later stages remain implemented; recovery instructions are in [`docs/reproducibility.md`](docs/reproducibility.md).
 
 Read durable progress without loading a model:
 

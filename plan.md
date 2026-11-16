@@ -2,7 +2,7 @@
 
 **Project:** Resource-Constrained Adaptation of *s1: Simple test-time scaling*  
 **Team:** Faisal Imran · Muhammad Ibrahim · Hamza Saeed  
-**Planning status:** Stages 1–5 complete; Stage 6 trial 1 active; review first-trial validation before any second trial or later stages
+**Planning status:** Stages 1–5 complete; Stage 6 trial 1, validation and base comparison complete; awaiting the requested review before further training
 **Primary specification:** `NLP_Proposal.pdf` (the group's approved project proposal)  
 **Last reviewed:** 2026-11-16
 
@@ -277,7 +277,7 @@ The layout is a **target**, not a requirement to create every file in Stage 1. C
 
 ### Stage 6 — Development tuning and final LoRA training
 
-**Status:** [ ] Active: first full 896-row trial continues through training and 100-row validation; verification and matched base validation are queued for review. Trial 2 and later stages are held pending that decision. MATH-500 remains unscored. See `docs/training_protocol.md`.
+**Status:** [ ] First full 896-row trial, all 100 held-out targets, fresh-process reload and matched base validation complete. Base NLL 0.563623 → adapted 0.479717 (14.9% lower). Trial 2, final training and benchmark remain held for the requested review. See `docs/first_trial_review.md`.
 
 **Goal:** Choose a stable setup on the **900/100** split, freeze it, and train the final model on all eligible original examples.
 
@@ -517,6 +517,8 @@ No unresolved choice is permission for Codex to select arbitrary values without 
 | 2026-11-15 | Stage 6 running / Stages 7–10 implementation | Resumable full trial active; 106 tests successful in the grader environment (6 optional/native skips); separate 7/7 grader tests pass; PEFT check covered in the inference environment; budget engine, sealed evaluation, paired analysis and report automation implemented | Native protocol/model results still pending; no benchmark scores or completion claim; current status via `scripts/status.py` |
 
 | 2026-11-16 | First-trial review boundary | Current training continues; only scheduler suspended; downstream controller honored PAUSE; dedicated verification/base-validation/review controller tested | User will decide on trial 2 after complete held-out validation; no paper-score threshold, benchmark access, training-config change or permanent trial cancellation |
+
+| 2026-11-16 | First-trial review ready | 896/896 training examples, 56 finite-gradient updates, 100/100 held-out targets, exact fresh-process reload; base/adapted NLL 0.563623/0.479717 over identical 555,371 targets | 14.9% relative NLL reduction is not benchmark accuracy; review artifacts verified; no second trial or final training started |
 
 ---
 
