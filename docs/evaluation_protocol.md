@@ -4,6 +4,8 @@ The completed first-run adapter is accepted for direct evaluation without furthe
 
 `freeze_evaluation.py` requires verified Stage 6 completion and all 45 held-out development generations. It records exact model/conversion/adapter/data/prompt/code hashes, runtime versions, token budgets, decoder, grader and analysis choices. It audits only already-sealed benchmark questions and context lengths. If benchmark answer artifacts already exist without a freeze, it refuses to create a retrospective freeze.
 
+Native execution success is insufficient by itself: the structured conditions must demonstrate an extractable answer readout on development. A completed run with zero such outputs fails before the benchmark freeze. This diagnoses controller/model compatibility without using correctness or benchmark scores. Failed native evidence and bounded readout-prefix diagnostics are documented in `protocol_development_notes.md`.
+
 Only `benchmark.sealed_test_rows` opens the benchmark answers for evaluation. It first verifies the physical freeze, all frozen file hashes and the generation runtime, then acquires the pinned 500-row source, validates upstream checksums when supplied, and confirms the exact sealed question IDs, order and text hashes. The earlier Stage 2 transport projection discarded non-question fields; that documented transport deviation is not a scoring run.
 
 ## Predictions and failures

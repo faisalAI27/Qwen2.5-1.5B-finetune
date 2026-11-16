@@ -1,0 +1,15 @@
+# Native protocol investigation
+
+The single accepted adapter and its held-out NLL results remain unchanged. No further training is authorized. The first native budget-protocol run is `results/protocol_dev/protocol-dev-v1/`, with all attempts and visible segments retained.
+
+At the 43/45-output check, all five direct-answer baseline outputs had an extractable answer, while none of the completed structured reasoning outputs did. Some answer phases emitted an immediate im_start role marker and therefore had empty answer text. Others repeated calculations until the answer cap. Actual EOS-triggered Wait continuations occurred in two outputs, but no reasoning-phase im_start stop had been observed. These are development compatibility observations, not answer-accuracy scores.
+
+The 14.9% held-out teacher-target NLL reduction does not establish reliable free generation or learned s1 boundaries. The existing engine's fake-decoder tests demonstrate stop/cap/continuation accounting, but actual model output must be inspected separately. Successful execution of a generation is not sufficient evidence that its answer readout works.
+
+`freeze_evaluation.py` now audits every condition before benchmark access. A completed development run with zero extractable structured-condition answers fails the native readout gate; MATH-500 remains sealed. This is a protocol-feasibility gate, not a minimum correctness score. The audit retains per-condition extraction, empty answers, unexpected role markers, caps and actual Wait counts. Its immutable export is `docs/protocol_validation_<development-run-id>.json`.
+
+After the current model job exits at that gate, `diagnose_readout.py` is queued to test three shared readouts on the same five development questions: the original training header, that header followed by `Answer: `, and that header followed by `Final Answer: `. Each probe is bounded to 512 reasoning tokens and 256 answer tokens, with a 1,024-token absolute ceiling and 120-second deadline. It uses the identical saved adapter, verifies its tensor fingerprint before/after, and performs no optimizer updates or benchmark grading.
+
+Injected text is logged separately. Generated-only and prefix-assisted extraction are distinguished; the latter is not evidence of spontaneous model formatting or mathematical correctness. These probes do not automatically select or freeze a new protocol. Any revision must retain the failed v1 evidence, use a new development-run identity, validate all nine conditions again, and freeze before opening the benchmark.
+
+Monitor `results/runtime/readout_diagnostic.json` / `.log`. Probe records go to `results/diagnostics/readout-v1/`; a completed summary exports to `docs/readout_diagnostic_v1.json`. The native readout gate has two targeted tests, the diagnostic prefix construction has one, and the three workflow-order tests pass. The new diagnostics have not yet completed on the GPU.

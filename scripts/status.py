@@ -86,10 +86,15 @@ def main():
     request = json.loads(request_path.read_text()) if request_path.exists() else None
     decision_path = root / "configs/single_run_decision.json"
     decision = json.loads(decision_path.read_text()) if decision_path.exists() else None
+    diagnostic_path = root / "results/runtime/readout_diagnostic.json"
+    diagnostic = json.loads(diagnostic_path.read_text()) if diagnostic_path.exists() else None
+    if diagnostic:
+        diagnostic["controller_process_alive"] = process_alive(diagnostic.get("controller_pid"), "scripts/diagnose_readout.py")
     print(json.dumps({"free_disk_gib": round(shutil.disk_usage(root).free / 1024**3, 2), "training_runs": runs,
                       "continuation_pipeline": pipeline,
                       "first_trial_review": review, "first_trial_review_request": request,
                       "single_run_decision": decision,
+                      "readout_diagnostic": diagnostic,
                       "test_protocol_frozen": (root / "manifests/evaluation_freeze.json").exists(),
                       "note": "running_or_interrupted is not a claim that a process is alive; committed counts come from durable checkpoints. Pending microbatches are not yet durable optimizer updates."}, indent=2))
 

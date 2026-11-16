@@ -16,7 +16,7 @@ Stage 3 completed 28/28 generations, with exact token-ID repeats within each run
 
 Stage 4 formatting/masking checks passed for all 996 eligible examples. Complete examples are preserved without truncation; measured full-length feasibility supports the 9,216-token training ceiling. The latest grader-environment suite ran 111 tests successfully (five native GPU tests and one optional PEFT test skipped). The PEFT check passes in the inference environment; the five native tests passed before full training. See [`docs/training_format_audit.md`](docs/training_format_audit.md).
 
-The remaining workflow is documented in [`docs/budget_protocol.md`](docs/budget_protocol.md), [`docs/evaluation_protocol.md`](docs/evaluation_protocol.md) and [`docs/reproducibility.md`](docs/reproducibility.md). The final paper writer includes hardware specifications and measured runtime at the end of `docs/paper.md`, after actual results exist. It labels incomplete studies explicitly.
+The remaining workflow is documented in [`docs/budget_protocol.md`](docs/budget_protocol.md), [`docs/evaluation_protocol.md`](docs/evaluation_protocol.md) and [`docs/reproducibility.md`](docs/reproducibility.md). Native checks have exposed empty/repeating structured answers; the benchmark freeze is gated on investigating readout compatibility. Development-only diagnostics are queued without retraining; see [`docs/protocol_development_notes.md`](docs/protocol_development_notes.md). The final paper writer includes hardware specifications and measured runtime at the end of `docs/paper.md`, after actual results exist. It labels incomplete studies explicitly.
 
 ## Minimal setup
 

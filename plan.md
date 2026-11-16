@@ -298,7 +298,7 @@ The layout is a **target**, not a requirement to create every file in Stage 1. C
 
 ### Stage 7 — Budget-forcing engine and protocol tests
 
-**Status:** [ ] Active: validate all nine conditions on five held-out development questions using the accepted existing adapter. Engine/token tests passed; native outputs pending. See `docs/budget_protocol.md`.
+**Status:** [ ] Active investigation: native generations execute, but structured answers are empty/repeating and lack extractable final answers. Complete the 45-output audit, retain v1 evidence, and probe common readout prefixes without training before any benchmark freeze. See `docs/protocol_development_notes.md`.
 
 **Goal:** Implement **genuine structural budget forcing**, not a generic “think longer” prompt.
 
@@ -523,6 +523,8 @@ No unresolved choice is permission for Codex to select arbitrary values without 
 | 2026-11-16 | First-trial review ready | 896/896 training examples, 56 finite-gradient updates, 100/100 held-out targets, exact fresh-process reload; base/adapted NLL 0.563623/0.479717 over identical 555,371 targets | 14.9% relative NLL reduction is not benchmark accuracy; review artifacts verified; no second trial or final training started |
 
 | 2026-11-16 | Existing adapter accepted | User chose this run only; reviewed 896-example adapter adopted without training; 100 development examples stay held out | Trial 2 skipped and fresh 996-example retraining deferred; Stage 7 protocol validation next; benchmark remains sealed |
+
+| 2026-11-16 | Stage 7 readout investigation | At 43/45 native outputs, five extractable direct answers and zero extractable structured answers; immediate role stops/repetition observed | Added native readout gate before benchmark freeze; bounded same-adapter development-only prefix probes queued; no retraining or benchmark access |
 
 ---
 

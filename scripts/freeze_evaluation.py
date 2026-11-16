@@ -14,6 +14,7 @@ from s1small.data import digest, file_sha256, read_jsonl, save_json
 from s1small.experiment import PredictionStore, validate_question_identity, verify_freeze
 from s1small.generate import build_prompt
 from s1small.mlx_decode import runtime_signature, s1_prompt
+from s1small.protocol_audit import audit_development, require_readout
 
 
 def main():
@@ -47,6 +48,10 @@ def main():
     records = store.records()
     if len(records) != 45 or any(row["status"] != "ok" or row.get("gold_answer") is not None for row in records):
         raise ValueError("All 45 development protocol generations must execute without benchmark gold")
+    audit = audit_development(records)
+    save_json(directory / "compatibility_audit.json", audit)
+    save_json(root / "docs" / f"protocol_validation_{args.development_run_id}.json", audit)
+    require_readout(audit)
     # Audit only already-sealed questions and prompt lengths. No answers/solutions.
     questions = read_jsonl(root / "data/raw/math500/questions.jsonl")
     validate_question_identity(questions, json.loads((root / "manifests/math500_questions.json").read_text()))
@@ -67,7 +72,7 @@ def main():
              "scripts/evaluate.py", "scripts/grade_results.py", "src/s1small/budget_forcing.py", "src/s1small/benchmark.py",
              "src/s1small/mlx_decode.py", "src/s1small/experiment.py", "src/s1small/grading.py", "src/s1small/mlx_backend.py",
              "src/s1small/mlx_runtime.py", "src/s1small/data.py", "src/s1small/formatting.py", "src/s1small/generate.py",
-             "scripts/analyze_results.py", "scripts/report_project.py", "src/s1small/metrics.py",
+             "scripts/analyze_results.py", "scripts/report_project.py", "src/s1small/metrics.py", "src/s1small/protocol_audit.py",
              "requirements-eval-lock.txt", "requirements-mlx-lock.txt", "requirements-reporting-lock.txt"]
     files.append(str(Path("results/study") / args.study_prefix / "stage6_summary.json"))
     if "decision_path" in training:
