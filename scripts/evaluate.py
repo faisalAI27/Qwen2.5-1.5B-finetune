@@ -17,7 +17,7 @@ from s1small.budget_forcing import CONDITIONS, condition_budget, run_structured
 from s1small.data import digest, file_sha256, save_json
 from s1small.experiment import PredictionStore
 from s1small.generate import build_prompt
-from s1small.grading import extract_final_answer
+from s1small.readout import extract_readout
 from s1small.mlx_decode import load_decoder, runtime_signature, s1_prompt, token_protocol, unstructured_answer
 
 
@@ -25,20 +25,25 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--scope", choices=["development", "test"], required=True)
     parser.add_argument("--run-id", required=True)
+    parser.add_argument("--protocol-config", default="budget_protocol_v2.json")
     args = parser.parse_args()
     if not args.run_id or any(c not in "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_" for c in args.run_id):
         parser.error("Use a simple run ID")
+    if Path(args.protocol_config).name != args.protocol_config or not args.protocol_config.endswith(".json"):
+        parser.error("Use a protocol JSON filename in configs/")
     import mlx.core as mx
     root = Path(__file__).resolve().parents[1]
     training = json.loads((root / "manifests/training_freeze.json").read_text())
-    protocol = json.loads((root / "configs/budget_protocol_v1.json").read_text())
     templates = json.loads((root / "configs/prompts/baseline_v1.json").read_text())
     if args.scope == "test":
         rows, freeze = sealed_test_rows(root)
         protocol = freeze["protocol"]
+        protocol_path = root / freeze.get("protocol_config_path", "configs/budget_protocol_v1.json")
         adapter = root / freeze["final_adapter_directory"]
         destination = root / "results/test" / args.run_id
     else:
+        protocol_path = root / "configs" / args.protocol_config
+        protocol = json.loads(protocol_path.read_text())
         # Use the selected 896-row model: these development targets were held
         # out from that model, even if all-data final retraining already ended.
         rows = load_development(root, 5)
@@ -53,6 +58,7 @@ def main():
     except BlockingIOError:
         raise SystemExit("This evaluation run already has an active writer")
     manifest = {"scope": args.scope, "run_id": args.run_id, "protocol": protocol, "question_ids": [row["id"] for row in rows],
+                "protocol_config_path": str(protocol_path.relative_to(root)), "protocol_config_sha256": file_sha256(protocol_path),
                 "generation_runtime": runtime_signature(),
                 "training_freeze_sha256": file_sha256(root / "manifests/training_freeze.json"),
                 "adapter_directory": str(adapter.relative_to(root)), "adapter_weight_sha256": file_sha256(adapter / "adapters.safetensors"),
@@ -62,16 +68,18 @@ def main():
                 "maximum_infrastructure_attempts": 2,
                 "memory_accounting": "Per-prediction MLX active peak includes both resident base/adapted models; do not call it dedicated VRAM.",
                 "code_sha256": {str(path.relative_to(root)): file_sha256(path) for path in [Path(__file__).resolve(),
-                   *[root / "src/s1small" / name for name in ("budget_forcing.py", "mlx_decode.py", "experiment.py", "grading.py")]]}}
+                   *[root / "src/s1small" / name for name in ("budget_forcing.py", "mlx_decode.py", "experiment.py", "grading.py", "readout.py")]]}}
     save_json(destination / "manifest.json", manifest)
     store = PredictionStore(destination, [(row["id"], condition) for row in rows for condition in CONDITIONS], digest(manifest))
     started = time.perf_counter()
     base, base_tokenizer, conversion = load_decoder(root, training["training_recipe"])
     tuned, tokenizer, _ = load_decoder(root, training["training_recipe"], adapter)
     base.prefill_step_size = tuned.prefill_step_size = protocol["prefill_step_size"]
-    tokens = token_protocol(tokenizer, tuned.eos_ids)
+    readout_prefix = protocol.get("answer_readout_prefix", "")
+    tokens = token_protocol(tokenizer, tuned.eos_ids, readout_prefix)
     save_json(destination / "token_protocol.json", {"reasoning_end": tokens.reasoning_end, "eos_ids": list(tokens.eos_ids),
-              "answer_header": list(tokens.answer_header), "newline": list(tokens.newline), "wait": list(tokens.wait)})
+              "answer_header": list(tokens.answer_header), "answer_readout_prefix": readout_prefix,
+              "newline": list(tokens.newline), "wait": list(tokens.wait)})
     # Compile/warm both model paths on a development prompt, outside measured
     # benchmark generation and without consulting benchmark answers.
     warm = load_development(root, 1)[0]["question"]
@@ -107,7 +115,7 @@ def main():
                     else:
                         budget = condition_budget(condition, protocol["natural_reasoning_ceiling"], protocol["answer_budget"], protocol["absolute_safety_ceiling"])
                         result = run_structured(decoder, input_ids, budget, tokens, protocol["timeout_seconds"])
-                    result.update(extract_final_answer(result["answer_text"]))
+                    result.update(extract_readout(result["answer_text"], readout_prefix if condition not in ("A", "B") else ""))
                     result.update(peak_mlx_active_bytes=mx.get_peak_memory(), unmapped_token_ids=sorted(decoder.unmapped))
                     decoder.unmapped.clear()
                     saved = store.save_attempt(row["id"], condition, {**metadata, **result})

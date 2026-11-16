@@ -65,3 +65,13 @@ PYTHONPATH=src .venv-eval/bin/python -m unittest discover -s tests -p test_gradi
 The five native MLX tests require explicit opt-in and were passed separately before full training; do not run them concurrently with the active full model. Plotting tests use synthetic fixtures only. They are not experimental results.
 
 Inspected upstream metadata is recorded in `license_metadata.json`: the pinned Qwen model and original s1K declare Apache-2.0; the inspected MATH-500 metadata does not declare a license. No project release license, redistribution grant, public repository publication or venue submission is assumed. This handoff is a local research draft; review upstream terms before any public release.
+
+## Current protocol revision
+
+The original 45-output native protocol run failed the answer-readout gate. Its 15 bounded diagnostic probes finished; v2 uses a shared `Final Answer: ` label with explicitly logged injected/generated origins. Continue under a fresh identity with:
+
+```bash
+caffeinate -i .venv-mlx/bin/python scripts/complete_project.py --protocol-run-id protocol-dev-v2 --protocol-config budget_protocol_v2.json
+```
+
+The v1 records/config remain unchanged. The command skips training because the adopted Stage 6 summary already selects the existing adapter. MATH-500 remains sealed until the complete v2 native development gate passes. See `protocol_v2.md`.

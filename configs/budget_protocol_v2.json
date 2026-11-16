@@ -1,0 +1,43 @@
+{
+  "version": "s1_local_two_phase_v2",
+  "scope": "development_protocol_not_frozen",
+  "conditions": [
+    "A",
+    "B",
+    "C",
+    "D256",
+    "D512",
+    "D1024",
+    "D2048",
+    "E1",
+    "E2"
+  ],
+  "natural_reasoning_ceiling": 8192,
+  "answer_budget": 1536,
+  "absolute_safety_ceiling": 12288,
+  "timeout_seconds": 900,
+  "prefill_step_size": 512,
+  "decoder": "greedy",
+  "kv_quantization": null,
+  "thinking_prefix": "<|im_start|>think\n",
+  "answer_header": "<|im_start|>answer\n",
+  "wait_injection": "\nWait",
+  "reasoning_stop": "im_start_or_model_eos",
+  "answer_readout": "Common training-format answer header plus the same declared Final Answer label for all C/D/E conditions. The label is injected control text, not a generated model claim.",
+  "budget_accounting": "Reasoning cap includes all emitted reasoning-phase stop tokens, even if subsequently removed. Report content tokens separately. Injected controls count against absolute ceiling, not model-generated token counts. Reserve the complete answer allowance before reasoning/Wait.",
+  "baseline_allowance": "A/B each receive natural_reasoning_ceiling + answer_budget total generated tokens; their unstructured reasoning/answer token counts are unavailable.",
+  "development_selection": "The original 45-output native v1 run had zero extracted structured answers. In 15 bounded same-five-question probes, Final Answer produced five short EOS-terminated bodies; selection used readout behavior, not correctness or benchmark scores. Revalidate all 45 native outputs under a fresh run ID before freeze.",
+  "source_harness": "simplescaling/s1 at 77272c6e925d610257a50b520bad15330b513389; vllm_causallms.py blob caeb333eef5b2558fd9ccddf5c677637723aa6a9",
+  "answer_readout_prefix": "Final Answer: ",
+  "extraction_context": "The declared common label is prepended to the generated answer body for explicit-answer-line extraction. Raw body, injected label and origins are retained; an empty body remains unextracted.",
+  "development_evidence": [
+    {
+      "path": "docs/protocol_validation_protocol-dev-v1.json",
+      "sha256": "c9180cb1f632a6117c0c16fef3302d2b75914821b12c8c6a486d4b48d3619cc1"
+    },
+    {
+      "path": "docs/readout_diagnostic_v1.json",
+      "sha256": "2da8a9a554e8a5a660682761131db5dd4651c098929f4a1c1e4ae93b9d04a424"
+    }
+  ]
+}

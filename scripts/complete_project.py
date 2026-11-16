@@ -39,13 +39,16 @@ def live_training_workers(prefix):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--study-prefix", default="local-study-v1")
-    parser.add_argument("--protocol-run-id", default="protocol-dev-v1")
+    parser.add_argument("--protocol-run-id", default="protocol-dev-v2")
     parser.add_argument("--test-run-id", default="math500-local-v1")
+    parser.add_argument("--protocol-config", default="budget_protocol_v2.json")
     parser.add_argument("--wait-for-stage6", action="store_true")
     parser.add_argument("--stage6-pid", type=int)
     parser.add_argument("--resume-interrupted-stage6", action="store_true",
                         help="Permit one same-recipe restart after process interruption; numerical failures still halt")
     args = parser.parse_args()
+    if Path(args.protocol_config).name != args.protocol_config or not args.protocol_config.endswith(".json"):
+        parser.error("Use a protocol JSON filename in configs/")
     if args.resume_interrupted_stage6 and (not args.wait_for_stage6 or not args.stage6_pid):
         parser.error("Automatic interruption recovery requires --wait-for-stage6 and the existing --stage6-pid")
     for value in (args.study_prefix, args.protocol_run_id, args.test_run_id):
@@ -62,6 +65,7 @@ def main():
     status_path = runtime / "project_pipeline.json"
     state = {"status": "running", "stage": "setup", "study_prefix": args.study_prefix,
              "protocol_run_id": args.protocol_run_id, "test_run_id": args.test_run_id,
+             "protocol_config": args.protocol_config,
              "stage6_pid": args.stage6_pid, "controller_pid": __import__("os").getpid()}
     def update(stage, **values):
         state.update(stage=stage, updated_at_utc=datetime.now(timezone.utc).isoformat(), **values)
@@ -119,12 +123,14 @@ def main():
         completed = json.loads(stage6.read_text())
         if completed["status"] != "complete":
             raise ValueError("Stage 6 did not complete")
-        run("held_out_protocol_validation", ".venv-mlx/bin/python", "evaluate.py", "--scope", "development", "--run-id", args.protocol_run_id)
+        run("held_out_protocol_validation", ".venv-mlx/bin/python", "evaluate.py", "--scope", "development", "--run-id", args.protocol_run_id,
+            "--protocol-config", args.protocol_config)
         run("pre_test_freeze", ".venv-mlx/bin/python", "freeze_evaluation.py", "--development-run-id", args.protocol_run_id,
-            "--study-prefix", args.study_prefix)
+            "--study-prefix", args.study_prefix, "--protocol-config", args.protocol_config)
         # Resource failures remain explicit partial coverage; still produce the
         # honest analysis/report if the raw test plan exists.
-        run("frozen_math500_generation", ".venv-mlx/bin/python", "evaluate.py", "--scope", "test", "--run-id", args.test_run_id, allow_partial=True)
+        run("frozen_math500_generation", ".venv-mlx/bin/python", "evaluate.py", "--scope", "test", "--run-id", args.test_run_id,
+            "--protocol-config", args.protocol_config, allow_partial=True)
         run("local_equivalence_grading", ".venv-eval/bin/python", "grade_results.py", "--run-id", args.test_run_id)
         run("paired_analysis_and_figures", ".venv-eval/bin/python", "analyze_results.py", "--run-id", args.test_run_id)
         run("paper_and_demo_handoff", ".venv-eval/bin/python", "report_project.py", "--run-id", args.test_run_id, "--study-prefix", args.study_prefix)

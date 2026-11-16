@@ -298,7 +298,7 @@ The layout is a **target**, not a requirement to create every file in Stage 1. C
 
 ### Stage 7 — Budget-forcing engine and protocol tests
 
-**Status:** [ ] Active investigation: native generations execute, but structured answers are empty/repeating and lack extractable final answers. Complete the 45-output audit, retain v1 evidence, and probe common readout prefixes without training before any benchmark freeze. See `docs/protocol_development_notes.md`.
+**Status:** [ ] V1 native run and 15 diagnostics complete. The common Final Answer label improved concise readout in five development probes; correctness is unscored. V2 config/code/tests are ready for a fresh 45-output native validation before any benchmark freeze. See `docs/protocol_v2.md`.
 
 **Goal:** Implement **genuine structural budget forcing**, not a generic “think longer” prompt.
 
@@ -525,6 +525,8 @@ No unresolved choice is permission for Codex to select arbitrary values without 
 | 2026-11-16 | Existing adapter accepted | User chose this run only; reviewed 896-example adapter adopted without training; 100 development examples stay held out | Trial 2 skipped and fresh 996-example retraining deferred; Stage 7 protocol validation next; benchmark remains sealed |
 
 | 2026-11-16 | Stage 7 readout investigation | At 43/45 native outputs, five extractable direct answers and zero extractable structured answers; immediate role stops/repetition observed | Added native readout gate before benchmark freeze; bounded same-adapter development-only prefix probes queued; no retraining or benchmark access |
+
+| 2026-11-16 | Stage 7 readout revision ready | V1 complete: 45 outputs, zero extracted structured answers; 15 same-adapter probes complete; Final Answer label gave five short EOS-terminated bodies | V1 evidence retained; v2 common readout and explicit extraction provenance prepared; full native 45-output revalidation required; no training or benchmark access |
 
 ---
 

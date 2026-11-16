@@ -10,7 +10,8 @@ GRADER_SETTINGS = {"version": "local_math_verify_v1", "parsing_timeout": 5, "ver
                    "float_rounding": 6, "numeric_precision": 15, "strict": True,
                    "allow_set_relation_comp": False, "fallback_mode": "no_fallback",
                    "extraction_mode": "first_match", "prediction_source": "last_balanced_box_or_explicit_answer_line",
-                   "bare_trailing_number_guess": False}
+                   "bare_trailing_number_guess": False,
+                   "structured_readout_context": "A frozen shared injected answer label may precede the generated answer body for extraction; origins and raw generated text are retained separately."}
 
 
 def extract_final_answer(text):

@@ -9,7 +9,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 from s1small.budget_forcing import CONDITIONS, condition_budget, run_structured
 from s1small.experiment import verify_freeze
 from s1small.generate import build_prompt
-from s1small.grading import extract_final_answer
+from s1small.readout import extract_readout
 from s1small.mlx_decode import load_decoder, s1_prompt, token_protocol, unstructured_answer
 
 
@@ -25,6 +25,7 @@ def main():
     baseline = args.condition in ("A", "B")
     decoder, tokenizer, _ = load_decoder(root, training["training_recipe"], None if baseline else root / freeze["final_adapter_directory"])
     config = freeze["protocol"]
+    prefix = config.get("answer_readout_prefix", "")
     decoder.prefill_step_size = config["prefill_step_size"]
     templates = json.loads((root / "configs/prompts/baseline_v1.json").read_text())
     prompt = build_prompt(args.question, args.condition, templates, tokenizer) if baseline else s1_prompt(args.question, tokenizer)
@@ -34,8 +35,8 @@ def main():
                                      config["absolute_safety_ceiling"], config["timeout_seconds"])
     else:
         result = run_structured(decoder, ids, condition_budget(args.condition, config["natural_reasoning_ceiling"], config["answer_budget"],
-                                config["absolute_safety_ceiling"]), token_protocol(tokenizer, decoder.eos_ids), config["timeout_seconds"])
-    result.update(extract_final_answer(result["answer_text"]))
+                                config["absolute_safety_ceiling"]), token_protocol(tokenizer, decoder.eos_ids, prefix), config["timeout_seconds"])
+    result.update(extract_readout(result["answer_text"], "" if baseline else prefix))
     result.update(question=args.question, condition=args.condition, scope="illustrative_demo_not_benchmark")
     print(json.dumps(result, indent=2, ensure_ascii=False))
 

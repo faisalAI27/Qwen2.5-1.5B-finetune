@@ -1,0 +1,28 @@
+{
+  "status": "complete",
+  "model_parameters_unchanged": true,
+  "optimizer_updates": 0,
+  "test_answers_used": false,
+  "outputs": 15,
+  "interpretation": "Prefix-assisted extraction is explicitly labeled and is not mathematical correctness or evidence of spontaneous learned formatting.",
+  "variants": {
+    "training_header": {
+      "outputs": 5,
+      "nonempty_answers": 4,
+      "generated_only_extractions": 0,
+      "prefix_assisted_extractions": 0
+    },
+    "answer_prefix": {
+      "outputs": 5,
+      "nonempty_answers": 5,
+      "generated_only_extractions": 0,
+      "prefix_assisted_extractions": 5
+    },
+    "final_answer_prefix": {
+      "outputs": 5,
+      "nonempty_answers": 5,
+      "generated_only_extractions": 0,
+      "prefix_assisted_extractions": 5
+    }
+  }
+}

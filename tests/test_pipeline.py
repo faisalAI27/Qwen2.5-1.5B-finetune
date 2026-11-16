@@ -9,7 +9,7 @@ import unittest
 
 
 class PipelineTests(unittest.TestCase):
-    def run_fixture(self, root, failure_stage=None):
+    def run_fixture(self, root, failure_stage=None, protocol_config="budget_protocol_v1.json"):
         source = Path(__file__).resolve().parents[1]
         (root / "scripts").mkdir()
         shutil.copyfile(source / "scripts/complete_project.py", root / "scripts/complete_project.py")
@@ -27,11 +27,12 @@ class PipelineTests(unittest.TestCase):
                 "root = pathlib.Path(__file__).resolve().parents[1]\n"
                 "stage = pathlib.Path(__file__).name\n"
                 "if stage == 'evaluate.py': stage += ':' + sys.argv[sys.argv.index('--scope')+1]\n"
+                f"if stage.startswith('evaluate.py') or stage == 'freeze_evaluation.py': assert sys.argv[sys.argv.index('--protocol-config')+1] == {protocol_config!r}\n"
                 "with (root / 'events.jsonl').open('a') as stream: stream.write(json.dumps(stage)+'\\n')\n"
                 f"if stage == {failure_stage!r}: raise SystemExit(1)\n"
                 f"if stage == 'report_project.py': (root / 'docs/handoff.json').write_text(json.dumps({{'status': {'partial' if failure_stage == 'evaluate.py:test' else 'complete'!r}}}))\n"
             )
-        result = subprocess.run([sys.executable, str(root / "scripts/complete_project.py")],
+        result = subprocess.run([sys.executable, str(root / "scripts/complete_project.py"), "--protocol-config", protocol_config],
                                 capture_output=True, text=True,
                                 env={**os.environ, "PYTHONPATH": str(source / "src")})
         events = [json.loads(line) for line in (root / "events.jsonl").read_text().splitlines()]
@@ -60,3 +61,10 @@ class PipelineTests(unittest.TestCase):
             self.assertEqual(result.returncode, 0, result.stderr)
             self.assertEqual(events[-3:], ["grade_results.py", "analyze_results.py", "report_project.py"])
             self.assertEqual(state["status"], "partial")
+
+    def test_versioned_protocol_is_forwarded_to_development_freeze_and_test(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            result, events, state = self.run_fixture(Path(temporary), protocol_config="budget_protocol_v2.json")
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertEqual(state["protocol_config"], "budget_protocol_v2.json")
+            self.assertIn("evaluate.py:test", events)

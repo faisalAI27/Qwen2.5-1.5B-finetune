@@ -37,3 +37,8 @@ class ReportTests(unittest.TestCase):
         self.assertNotIn("Two predeclared one-epoch development trials", single_run_paper)
         self.assertNotIn("Final training starts from fresh", single_run_paper)
         self.assertEqual(single_run_paper.count("| synthetic |"), 1)
+        v2 = {**freeze, "protocol": {**freeze["protocol"], "answer_readout_prefix": "Final Answer: "}}
+        v2_paper = module.make_paper(report, existing, v2, "synthetic", "Synthetic hardware fixture")
+        self.assertIn("label is an injected control", v2_paper)
+        self.assertIn("not evidence of spontaneous learned formatting", v2_paper)
+        self.assertIn("without correctness or benchmark scoring", v2_paper)

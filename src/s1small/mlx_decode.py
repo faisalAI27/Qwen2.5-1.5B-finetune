@@ -26,12 +26,12 @@ def s1_prompt(question, tokenizer):
                                          tokenize=False, add_generation_prompt=True) + THINK_START
 
 
-def token_protocol(tokenizer, eos_ids):
+def token_protocol(tokenizer, eos_ids, answer_readout_prefix=""):
     encode = lambda text: tuple(tokenizer.encode(text, add_special_tokens=False))
     marker = encode("<|im_start|>")
     if len(marker) != 1 or encode(THINK_START) != (151644, 26865, 198):
         raise ValueError("Tokenizer differs from the audited s1 markers")
-    return Protocol(marker[0], tuple(eos_ids), encode("<|im_start|>answer\n"), encode("\n"), encode("\nWait"))
+    return Protocol(marker[0], tuple(eos_ids), encode("<|im_start|>answer\n") + encode(answer_readout_prefix), encode("\n"), encode("\nWait"))
 
 
 class MLXDecoder:

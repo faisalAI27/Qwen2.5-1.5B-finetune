@@ -170,6 +170,13 @@ def make_paper(report, stage6, freeze, run_id, hardware):
               "Evaluation memory samples include both resident model variants. The original 20-row technical pilot used 2.993 GB peak active allocation; the complete 9,109-token backward profile used 5.833 GB. "
               "These are measured local feasibility observations, not guarantees for other machines.", ""]
     diagnostics = freeze.get("development_protocol_diagnostics", {})
+    if freeze["protocol"].get("answer_readout_prefix"):
+        lines.insert(lines.index("## 4. Experimental setup") + 2,
+            "All structured conditions append the same declared `Final Answer: ` label after the training-format answer header. "
+            "The label is an injected control and counts against the absolute token ceiling. Answer extraction uses that declared label plus the raw generated answer body; "
+            "both origins remain explicit, and an empty generated body still has no extracted answer. This is a readout adaptation, not evidence of spontaneous learned formatting. "
+            "The original 45-output native calibration produced no extracted structured answers. Fifteen bounded development-only prefix probes motivated this revision based on concise EOS-terminated readout, without correctness or benchmark scoring. "
+            "The failed calibration, probes and revised full development validation are retained before the benchmark freeze.\n")
     if diagnostics:
         insertion = ("Held-out protocol validation recorded "
                      f"{diagnostics.get('marker_stops', 0)} im_start reasoning-stop events, "

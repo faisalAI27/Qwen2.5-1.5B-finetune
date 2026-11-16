@@ -19,11 +19,14 @@ from s1small.protocol_audit import audit_development, require_readout
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--development-run-id", default="protocol-dev-v1")
+    parser.add_argument("--development-run-id", default="protocol-dev-v2")
     parser.add_argument("--study-prefix", default="local-study-v1")
+    parser.add_argument("--protocol-config", default="budget_protocol_v2.json")
     args = parser.parse_args()
     if any(Path(value).name != value or value in (".", "..") for value in (args.development_run_id, args.study_prefix)):
         parser.error("Use simple run IDs")
+    if Path(args.protocol_config).name != args.protocol_config or not args.protocol_config.endswith(".json"):
+        parser.error("Use a protocol JSON filename in configs/")
     root = Path(__file__).resolve().parents[1]
     output = root / "manifests/evaluation_freeze.json"
     if output.exists():
@@ -37,12 +40,14 @@ def main():
         raise ValueError("A verified evaluation adapter must be selected before any test scoring")
     directory = root / "results/protocol_dev" / args.development_run_id
     manifest = json.loads((directory / "manifest.json").read_text())
-    protocol = json.loads((root / "configs/budget_protocol_v1.json").read_text())
+    protocol_path = root / "configs" / args.protocol_config
+    protocol = json.loads(protocol_path.read_text())
     expected_ids = [row["id"] for row in load_development(root, 5)]
     selected = json.loads((root / "results/training" / training["selected_run_id"] / "summary.json").read_text())
     if (manifest["scope"] != "development" or manifest["question_ids"] != expected_ids
             or manifest["protocol"] != protocol or manifest["adapter_directory"] != selected["adapter_directory"]
-            or manifest["generation_runtime"] != runtime_signature()):
+            or manifest["generation_runtime"] != runtime_signature()
+            or manifest.get("protocol_config_path", "configs/budget_protocol_v1.json") != str(protocol_path.relative_to(root))):
         raise ValueError("Protocol validation must use held-out questions and the selected 896-row adapter")
     store = PredictionStore(directory, [(key, condition) for key in expected_ids for condition in CONDITIONS], digest(manifest))
     records = store.records()
@@ -66,15 +71,19 @@ def main():
     grader = json.loads(subprocess.check_output([str(root / ".venv-eval/bin/python"), str(root / "scripts/grade_results.py"), "--print-manifest"],
                                                cwd=root, env={**os.environ, "PYTHONPATH": str(root / "src")}, text=True))
     final = stage6.get("evaluation_model") or stage6["final_training"]
-    files = ["configs/sources.json", "configs/budget_protocol_v1.json", "configs/prompts/baseline_v1.json", "configs/formatting.json",
+    files = ["configs/sources.json", str(protocol_path.relative_to(root)), "configs/prompts/baseline_v1.json", "configs/formatting.json",
              "manifests/training_freeze.json", "manifests/s1k_eligibility.json", "manifests/math500_questions.json",
              "data/raw/math500/questions.jsonl", "docs/baseline_smoke_summary.json",
              "scripts/evaluate.py", "scripts/grade_results.py", "src/s1small/budget_forcing.py", "src/s1small/benchmark.py",
-             "src/s1small/mlx_decode.py", "src/s1small/experiment.py", "src/s1small/grading.py", "src/s1small/mlx_backend.py",
+             "src/s1small/mlx_decode.py", "src/s1small/experiment.py", "src/s1small/grading.py", "src/s1small/readout.py", "src/s1small/mlx_backend.py",
              "src/s1small/mlx_runtime.py", "src/s1small/data.py", "src/s1small/formatting.py", "src/s1small/generate.py",
              "scripts/analyze_results.py", "scripts/report_project.py", "src/s1small/metrics.py", "src/s1small/protocol_audit.py",
              "requirements-eval-lock.txt", "requirements-mlx-lock.txt", "requirements-reporting-lock.txt"]
     files.append(str(Path("results/study") / args.study_prefix / "stage6_summary.json"))
+    for evidence in protocol.get("development_evidence", []):
+        if file_sha256(root / evidence["path"]) != evidence["sha256"]:
+            raise ValueError("Protocol development evidence changed")
+        files.append(evidence["path"])
     if "decision_path" in training:
         if file_sha256(root / training["decision_path"]) != training["decision_sha256"]:
             raise ValueError("The accepted model-selection decision changed")
@@ -89,6 +98,7 @@ def main():
     record = {"scope": "frozen_test_evaluation", "test_used_for_selection": False,
               "generation_runtime": runtime_signature(),
               "protocol": {**protocol, "scope": "frozen_test_evaluation"}, "grader": grader,
+              "protocol_config_path": str(protocol_path.relative_to(root)),
               "final_adapter_directory": final["adapter_directory"], "selected_development_adapter_directory": selected["adapter_directory"],
               "evaluated_training_examples": final["training_examples"],
               "training_deviation": stage6.get("training_deviation"),
