@@ -1,0 +1,17 @@
+{
+  "version": "runpod_vllm_fp16_replication_v1",
+  "provider": "runpod",
+  "dtype": "float16",
+  "concurrency": 8,
+  "max_model_len": 16384,
+  "max_num_seqs": 8,
+  "gpu_memory_utilization": 0.85,
+  "enable_prefix_caching": true,
+  "enforce_eager": false,
+  "tensor_parallel_size": 1,
+  "seed": 42,
+  "max_lora_rank": 16,
+  "lora_dtype": "float16",
+  "generation_config": "vllm",
+  "latency_interpretation": "Per-output latency includes concurrent scheduling and multi-phase generation. Use total tokens/wall time for throughput; do not equate batched latency with isolated single-request latency."
+}
