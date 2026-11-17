@@ -5,9 +5,11 @@ import json
 from pathlib import Path
 import struct
 import tempfile
+import threading
 import time
 from types import SimpleNamespace
 import unittest
+import zipfile
 from unittest.mock import patch
 
 import numpy as np
@@ -135,6 +137,28 @@ class FakeEngine:
 
 
 class BridgeTests(unittest.IsolatedAsyncioTestCase):
+    async def test_multiple_state_machines_feed_one_engine_loop_concurrently(self):
+        class ConcurrentEngine:
+            def __init__(self):
+                self.active = self.maximum = 0
+                self.threads = set()
+            async def generate(self, **arguments):
+                self.active += 1
+                self.maximum = max(self.maximum, self.active)
+                self.threads.add(threading.get_ident())
+                try:
+                    await asyncio.sleep(0.02)
+                    yield SimpleNamespace(outputs=[SimpleNamespace(token_ids=[98])])
+                finally:
+                    self.active -= 1
+        engine = ConcurrentEngine()
+        bridge = AsyncBridge(engine, asyncio.get_running_loop(), {"max_model_len": 100, "seed": 42}, SimpleNamespace)
+        results = await asyncio.gather(*(asyncio.to_thread(bridge.generate, [i + 1], 1, {98}, time.perf_counter() + 2, None) for i in range(8)))
+        self.assertEqual(engine.maximum, 8)
+        self.assertEqual(engine.threads, {threading.get_ident()})
+        self.assertTrue(all(r.tokens == (98,) for r in results))
+        bridge.close()
+
     async def test_real_protocol_handles_counted_stop_wait_and_answer_through_async_bridge(self):
         loop = asyncio.get_running_loop()
         engine = FakeEngine([[10, 99], [11, 98], [20, 98]])
@@ -175,6 +199,35 @@ class BridgeTests(unittest.IsolatedAsyncioTestCase):
 
 
 class RunnerTests(unittest.TestCase):
+    def test_vllm_notebook_has_drive_download_and_exports_results_without_weights(self):
+        import ast
+        notebook = json.loads((ROOT / "notebooks/runpod_inference.ipynb").read_text())
+        source = "\n".join("".join(c["source"]) for c in notebook["cells"] if c["cell_type"] == "code")
+        self.assertIn("1e0G7nG1B8c6G4CKzw6-U69my-x7GJfuD", source)
+        self.assertIn("scripts/runpod_vllm.py", source)
+        exporter = None
+        for cell in notebook["cells"]:
+            if cell["cell_type"] == "code":
+                self.assertEqual(cell["outputs"], [])
+                tree = ast.parse("".join(cell["source"]))
+                for node in tree.body:
+                    if isinstance(node, ast.FunctionDef) and node.name == "export_results":
+                        exporter = node
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary) / "workspace"; root.mkdir()
+            for name in ("results/answer.json", "manifests/evaluation_freeze.json", "artifacts/vllm-export/export_manifest.json",
+                         "artifacts/vllm-export/base/model.safetensors", ".venv/private", "results/.run.lock"):
+                path = root / name; path.parent.mkdir(parents=True, exist_ok=True); path.write_text('test')
+            destination = Path(temporary) / "results.zip"
+            namespace = {"ROOT": root, "RESULTS_ZIP": destination, "zipfile": zipfile, "NEW_FILES": ()}
+            exec(compile(ast.Module(body=[exporter], type_ignores=[]), "notebook-export", "exec"), namespace)
+            namespace["export_results"]()
+            with zipfile.ZipFile(destination) as archive:
+                names = archive.namelist()
+                self.assertIn("results/answer.json", names)
+                self.assertIn("artifacts/vllm-export/export_manifest.json", names)
+                self.assertFalse(any(name.endswith('.safetensors') or '.venv' in name or name.endswith('.lock') for name in names))
+
     def test_runner_refuses_active_mac_workspace(self):
         spec = importlib.util.spec_from_file_location("vllm_runner_test", ROOT / "scripts/runpod_vllm.py")
         module = importlib.util.module_from_spec(spec); spec.loader.exec_module(module)

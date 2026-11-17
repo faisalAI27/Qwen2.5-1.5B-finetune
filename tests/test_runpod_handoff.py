@@ -38,7 +38,7 @@ class RunPodHandoffTests(unittest.TestCase):
                 module.main()
 
     def test_notebook_parses_and_embeds_exact_launcher(self):
-        notebook = json.loads((ROOT / "notebooks/runpod_inference.ipynb").read_text())
+        notebook = json.loads((ROOT / "notebooks/runpod_mlx_inference.ipynb").read_text())
         embedded = None
         for cell in notebook["cells"]:
             if cell["cell_type"] != "code":
