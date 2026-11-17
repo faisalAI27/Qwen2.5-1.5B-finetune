@@ -37,6 +37,10 @@ These are persistent-volume files, not an automatic Google Drive upload. A publi
 
 Resume with the same workspace, launcher commit, environment and frozen GPU/driver/runtime. Runtime changes reject a mixed run. The helper prints newly appended output and samples GPU activity while inference runs. Closing Jupyter or finishing a cell does not stop billing. After backup, stop the Pod in the console; retained storage remains billed. [Pod management](https://docs.runpod.io/pods/manage-pods).
 
+## Plotting backend recovery
+
+Jupyter may export `MPLBACKEND=module://matplotlib_inline.backend_inline`, while the isolated analysis environment lacks that module. Matplotlib can fail during import before the analysis script selects its own backend. The notebook helper now passes `MPLBACKEND=agg` in each child environment before imports, without changing frozen generation or analysis source files. If grading already completed and analysis stopped on this error, set `os.environ['MPLBACKEND'] = 'agg'` in the current notebook, then rerun `run_stage('analyze')`, `run_stage('status')`, and `save_state()`. Generation and grading do not need to be repeated. The refreshed results ZIP will include the completed analysis and figures.
+
 ## Validation
 
 Local tests cover Q4/group reconstruction, BF16 decoding, independently readable safetensors, exact PEFT transposes/fingerprints, resumable dense export and index integrity, tamper rejection, async stop/Wait accounting, deadline aborts and context bounds. The real 224-tensor adapter passed conversion/fingerprint checks. Four two-row samples from the real base matched pinned MLX CPU dequantization exactly before the FP16 cast. Full model loading, CUDA LoRA kernels, concurrency speed and GPU smoke still require the allocated RunPod GPU. The Mac run continues independently.
