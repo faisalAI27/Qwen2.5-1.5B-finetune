@@ -1,0 +1,2 @@
+# Matplotlib writes legal multi-line SVG path attributes with trailing spaces.
+docs/figures/*.svg -whitespace

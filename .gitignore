@@ -34,3 +34,8 @@ wandb/
 *.ckpt
 *.bin
 
+
+# Downloaded private/local handoffs and rendered deliverables
+*.zip
+*.zip.sha256
+output/

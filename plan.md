@@ -2,9 +2,9 @@
 
 **Project:** Resource-Constrained Adaptation of *s1: Simple test-time scaling*  
 **Team:** Faisal Imran · Muhammad Ibrahim · Hamza Saeed  
-**Planning status:** Stages 1–7 complete under the single-run decision; frozen Mac MATH-500 generation active; optional Colab CUDA replication being prepared without training
+**Planning status:** Stages 1–10 research deliverables complete under the accepted single-run decision; full FP16/vLLM MATH-500 evaluation verified, local partial run retired; external venue submission is optional and not performed
 **Primary specification:** `NLP_Proposal.pdf` (the group's approved project proposal)  
-**Last reviewed:** 2026-11-16
+**Last reviewed:** 2026-11-17
 
 **Hardware constraint (2026-11-14):** The user requires this local computer for the project: Apple M1 MacBook Air, 8 GB unified memory, 7-core GPU. PyTorch MPS passed a small tensor test outside the sandbox. See `docs/hardware.md` for measured specifications and limitations. Remote GPU access is not assumed; full-length backward feasibility and stable local pilot training are verified, while full training/evaluation remain in progress. Include the actual hardware and runtime measurements in the final report.
 
@@ -15,6 +15,8 @@
 **Execution update (2026-11-16, accepted existing run):** The user has decided to proceed with this run only. Use the completed 896-example adapter directly for protocol validation and frozen benchmark evaluation. Skip trial 2 and defer the original fresh 996-example final retraining. Preserve the 100 held-out development examples and document this single-candidate, compute-constrained deviation in the report. `configs/single_run_decision.json` is the current choice. The earlier review hold is resolved for inference/evaluation; it does not authorize more training.
 
 **Hardware extension (2026-11-16):** The user requested Colab free-GPU inference in parallel with the ongoing Mac run and asked about GitHub transfer. Use T4/CUDA for the prepared route; training remains finished on the Mac. Preserve exact Q4 base/adapter/tokenizer/protocol, validate CUDA on held-out data before a separate CUDA freeze, and report CUDA hardware/timing independently. Do not combine Metal and CUDA outputs or retrain. The small code repository can be pushed/cloned separately from the approximately 0.9 GB Drive asset bundle. No push or cloud upload is authorized/performed by this preparation. See `docs/colab_inference.md`.
+
+**Final execution update (2026-11-17):** The user authorized RunPod vLLM inference, verified-result review, and retiring local generation once the complete GPU archive was confirmed. The separate frozen FP16 reconstruction completed all 4,500 predictions and grades. CRC, hash links, pinned sources, gold answers and independently recomputed analysis passed. The 1,287 ungraded Mac outputs are preserved and excluded; its controller/worker were stopped at 18:09:58 Asia/Karachi and PAUSE remains in place. One accepted 896-example adapter is the final trained model; no additional training is needed. The paper, figures, all 24 qualitative categories, measured hardware appendix, bounded live/replay demos and local reproducibility handoff are completed. The plan's publication task is fulfilled as a documented target-route/readiness assessment, not an unauthorized external submission. See `docs/results.md`, `docs/paper.md`, `docs/reproducibility.md` and `docs/publication_readiness.md`.
 
 > **Purpose of this file:** This is the executable project roadmap for a human developer working with Codex in VS Code. Complete **one stage at a time**, test the stage, update its checkbox, and stop for review. Do not ask Codex to build the entire project in one prompt.
 
@@ -320,17 +322,17 @@ The layout is a **target**, not a requirement to create every file in Stage 1. C
 
 ### Stage 8 — Frozen MATH-500 test evaluation
 
-**Status:** [ ] Active: settings frozen and all 4,500 slots initialized; Mac MATH-500 generation running. Correctness grading follows generation. See `docs/evaluation_protocol.md`.
+**Status:** [x] Complete; final GPU archive, derived reports and acceptance evidence are in `docs/results.md`, `docs/paper.md`, `docs/error_cases.md`, `docs/demo_verification.json` and `docs/handoff.json`.
 
 **Goal:** Evaluate every predeclared condition on exactly the same benchmark, without test-set tuning.
 
 **Tasks**
-- [ ] Review the frozen-config checklist and confirm model/dataset revisions, dataset IDs, prompt templates, answer grader, budgets, decoder, timeout, and safety limits.
-- [ ] Use a deterministic answer-extraction and mathematical-equivalence grading approach compatible with MATH-500; unit-test it on **synthetic examples and development data**, not by optimizing for test outputs.
-- [ ] Evaluate A, B, C, D256, D512, D1024, D2048, E1, E2 on the **same 500 test IDs**; if resource failures prevent full completion, mark the study **partial** and report per-condition denominators.
-- [ ] Save a JSONL record for **every question and condition** with: question ID, source revision, model/adapter revision, condition, prompts/config IDs, raw generated text or segments, extracted answer, gold answer, correctness, extraction status, reasoning/generated token counts, latency, and termination reason.
-- [ ] Distinguish model errors, extraction errors, and infrastructure failures; do not quietly omit difficult cases.
-- [ ] Keep all evaluation code and config checksummed/versioned.
+- [x] Review the frozen-config checklist and confirm model/dataset revisions, dataset IDs, prompt templates, answer grader, budgets, decoder, timeout, and safety limits.
+- [x] Use a deterministic answer-extraction and mathematical-equivalence grading approach compatible with MATH-500; unit-test it on **synthetic examples and development data**, not by optimizing for test outputs.
+- [x] Evaluate A, B, C, D256, D512, D1024, D2048, E1, E2 on the **same 500 test IDs**; if resource failures prevent full completion, mark the study **partial** and report per-condition denominators.
+- [x] Save a JSONL record for **every question and condition** with: question ID, source revision, model/adapter revision, condition, prompts/config IDs, raw generated text or segments, extracted answer, gold answer, correctness, extraction status, reasoning/generated token counts, latency, and termination reason.
+- [x] Distinguish model errors, extraction errors, and infrastructure failures; do not quietly omit difficult cases.
+- [x] Keep all evaluation code and config checksummed/versioned.
 
 **Artifacts:** `results/test/<run_id>/*.jsonl`, run manifest, per-condition score summaries.
 
@@ -338,19 +340,19 @@ The layout is a **target**, not a requirement to create every file in Stage 1. C
 
 ### Stage 9 — Analysis, significance and error study
 
-**Status:** [ ] Paired statistics, transition/error cases and PNG/SVG export implemented and tested on synthetic fixtures; real results pending Stage 8.
+**Status:** [x] Complete; final GPU archive, derived reports and acceptance evidence are in `docs/results.md`, `docs/paper.md`, `docs/error_cases.md`, `docs/demo_verification.json` and `docs/handoff.json`.
 
 **Goal:** Answer the research question rigorously, including cases where extra reasoning hurts.
 
 **Tasks**
-- [ ] Compute accuracy = correct / fixed evaluated denominator; report exact denominator for each condition.
-- [ ] Report mean and median reasoning tokens, total generated tokens, latency and answer-extraction failure rate; report safety-cap hit rates.
-- [ ] Plot **accuracy vs measured reasoning tokens**, **accuracy vs latency**, and performance differences relative to **C natural stopping**.
-- [ ] Use **paired bootstrap** confidence intervals for per-question accuracy differences when comparing conditions on the same IDs; state resampling method, seed, iterations, and confidence level.
-- [ ] Make a transition table for each intervention: `wrong→right`, `right→wrong`, `wrong→wrong`, `right→right`, and extraction failures.
-- [ ] Analyze representative examples where continuation **fixes**, **spoils**, and **does not change** the answer.
-- [ ] If reporting the original paper's **Control, Scaling, Performance** metrics, match its definitions exactly; otherwise use ordinary names, not borrowed labels.
-- [ ] Discuss the smaller model, context truncation/exclusions, benchmark leakage checks, the number of seeds, and runtime/hardware trade-offs.
+- [x] Compute accuracy = correct / fixed evaluated denominator; report exact denominator for each condition.
+- [x] Report mean and median reasoning tokens, total generated tokens, latency and answer-extraction failure rate; report safety-cap hit rates.
+- [x] Plot **accuracy vs measured reasoning tokens**, **accuracy vs latency**, and performance differences relative to **C natural stopping**.
+- [x] Use **paired bootstrap** confidence intervals for per-question accuracy differences when comparing conditions on the same IDs; state resampling method, seed, iterations, and confidence level.
+- [x] Make a transition table for each intervention: `wrong→right`, `right→wrong`, `wrong→wrong`, `right→right`, and extraction failures.
+- [x] Analyze representative examples where continuation **fixes**, **spoils**, and **does not change** the answer.
+- [x] If reporting the original paper's **Control, Scaling, Performance** metrics, match its definitions exactly; otherwise use ordinary names, not borrowed labels.
+- [x] Discuss the smaller model, context truncation/exclusions, benchmark leakage checks, the number of seeds, and runtime/hardware trade-offs.
 
 **Artifacts:** reproducible analysis script, tables, figures, error-case appendix, stats summary.
 
@@ -358,18 +360,18 @@ The layout is a **target**, not a requirement to create every file in Stage 1. C
 
 ### Stage 10 — Conference-style paper, demo and handoff
 
-**Status:** [ ] Evidence-driven paper/demo/handoff writer implemented; actual draft waits for saved results. Reproducibility and license metadata documented.
+**Status:** [x] Complete; final GPU archive, derived reports and acceptance evidence are in `docs/results.md`, `docs/paper.md`, `docs/error_cases.md`, `docs/demo_verification.json` and `docs/handoff.json`.
 
 **Goal:** Produce a defensible research deliverable, even if the result is a performance plateau or decline.
 
 **Tasks**
-- [ ] Write abstract, introduction, related work, method, experiment setup, results, analysis, limitations and conclusion.
-- [ ] Clearly distinguish **original s1 contributions** from **our small-model reproduction/adaptation**.
-- [ ] Report training hardware, GPU hours, all departures, dataset and model revisions, any context filtering, baseline prompts and grader details.
-- [ ] Include experiment table, accuracy/cost plots, confidence intervals, and qualitative examples; do not selectively present positive cases.
-- [ ] Prepare reproducibility README, frozen configs, scripts, final LoRA weights or release instructions, and repository license/citation checks.
-- [ ] Select a target venue only after results; check submission requirements, ethics, page limits and deadlines at that time.
-- [ ] Prepare a concise presentation/demo that can re-run a few example questions without claiming it represents the full benchmark.
+- [x] Write abstract, introduction, related work, method, experiment setup, results, analysis, limitations and conclusion.
+- [x] Clearly distinguish **original s1 contributions** from **our small-model reproduction/adaptation**.
+- [x] Report training hardware, GPU hours, all departures, dataset and model revisions, any context filtering, baseline prompts and grader details.
+- [x] Include experiment table, accuracy/cost plots, confidence intervals, and qualitative examples; do not selectively present positive cases.
+- [x] Prepare reproducibility README, frozen configs, scripts, final LoRA weights or release instructions, and repository license/citation checks.
+- [x] Assess a publication target after results: an ACL-family short reproduction/negative-result route via ARR; current call, page limit, ethics, anonymity/service requirements and date schedule checked. Actual venue/cycle selection, template conversion and submission remain optional external publication steps, not a completed submission. See `docs/publication_readiness.md`.
+- [x] Prepare a concise presentation/demo that can re-run a few example questions without claiming it represents the full benchmark.
 
 **Artifacts:** conference-style paper draft, final README, presentation/demo notes, clean public repository/package.
 
@@ -429,15 +431,15 @@ All `null` fields must become actual measurements/outputs on successful runs or 
 
 ## 7. Freeze checklist (mandatory before Stage 8)
 
-- [ ] Base model ID/revision and final adapter revision recorded.
-- [ ] Source s1K revision and eligibility/exclusion counts fixed.
-- [ ] Development-only decisions completed and documented.
-- [ ] Dataset/test benchmark revision and ordered question IDs fixed.
-- [ ] Prompt templates and reasoning/answer delimiter protocol frozen.
-- [ ] Decoding setup, budgets, safety ceiling, final answer allowance frozen.
-- [ ] Answer extraction and equivalence grader frozen with tests.
-- [ ] Raw-result schema, failure handling and output locations fixed.
-- [ ] No MATH-500 score has been used for selecting these settings.
+- [x] Base model ID/revision and final adapter revision recorded.
+- [x] Source s1K revision and eligibility/exclusion counts fixed.
+- [x] Development-only decisions completed and documented.
+- [x] Dataset/test benchmark revision and ordered question IDs fixed.
+- [x] Prompt templates and reasoning/answer delimiter protocol frozen.
+- [x] Decoding setup, budgets, safety ceiling, final answer allowance frozen.
+- [x] Answer extraction and equivalence grader frozen with tests.
+- [x] Raw-result schema, failure handling and output locations fixed.
+- [x] No MATH-500 score has been used for selecting these settings.
 
 ---
 
@@ -467,7 +469,7 @@ Suggested next stage:
 
 ### Recommended immediate action
 
-**Start Stage 1 only.** Do not attempt full LoRA training until Stage 2 length audit, Stage 4 loss-mask validation and Stage 5 memory pilot have passed.
+**Historical initial instruction, superseded by completed execution above: Start Stage 1 only.** Do not attempt full LoRA training until Stage 2 length audit, Stage 4 loss-mask validation and Stage 5 memory pilot have passed.
 
 ---
 
@@ -546,3 +548,5 @@ No unresolved choice is permission for Codex to select arbitrary values without 
 - MATH-500: https://huggingface.co/datasets/HuggingFaceH4/MATH-500
 - Base model: https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct
 
+
+| 2026-11-17 | Stages 8–10 complete | Separate RTX 4090 FP16/vLLM run: 4,500/4,500 outputs and resolved grades, zero infrastructure failures/timeouts; full provenance audit and local statistical reanalysis match. Paper PDF/Markdown, all-condition figures, 24 deterministic qualitative categories, hardware/runtime appendix, live and replay demo, reproducibility package complete | C 28.6%, B 43.0%, D1024 28.6% at 82.1% fewer output tokens; E2 +0.2 pp [-2.2, 2.6]. Pre-intervention divergence and protocol confounds disclosed. Local 1,287 partial outputs retained but excluded; controller stopped. No extra training, AIME, model release or venue submission |

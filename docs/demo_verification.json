@@ -1,0 +1,34 @@
+{
+  "status": "verified",
+  "scope": "illustrative_demo_not_benchmark",
+  "backend": "local_mlx_q4_fp32_not_final_gpu_backend",
+  "live_demo": {
+    "question": "What is 17 times 23?",
+    "condition": "D256",
+    "answer_text": "17 times 23 is 391.",
+    "extracted_answer": "17 times 23 is 391.",
+    "extraction_status": "explicit_answer_line",
+    "latency_seconds": 8.225491292076185,
+    "total_generated_tokens": 269,
+    "reasoning_tokens": 256,
+    "answer_budget": 128,
+    "timeout_seconds": 90.0,
+    "timed_out": false
+  },
+  "expected_mathematical_answer": "391",
+  "interpretation": "The generated sentence states the correct toy arithmetic result; not a new benchmark accuracy measurement.",
+  "replay_rescued": {
+    "question_id": "test/algebra/170.json",
+    "C_answer": "21",
+    "D256_answer": "11",
+    "gold": "11"
+  },
+  "replay_spoiled": {
+    "question_id": "test/algebra/1031.json",
+    "C_answer": "5.5",
+    "D256_answer": "10",
+    "gold": "11/2"
+  },
+  "benchmark_restarted": false,
+  "training_restarted": false
+}

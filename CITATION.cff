@@ -1,0 +1,15 @@
+cff-version: 1.2.0
+message: "Please cite the project report when using these results; this is an unpublished research project."
+title: "Budget Forcing on a 1.5B Model: A Resource-Constrained Study"
+type: report
+authors:
+  - family-names: Imran
+    given-names: Faisal
+  - family-names: Ibrahim
+    given-names: Muhammad
+  - family-names: Saeed
+    given-names: Hamza
+year: 2026
+date-released: 2026-11-17
+repository-code: "https://github.com/faisalAI27/Qwen2.5-1.5B-finetune"
+abstract: "A single-run adaptation of original s1K training and budget forcing to Qwen2.5-1.5B-Instruct, with local M1 LoRA training and independently frozen FP16/vLLM MATH-500 evaluation."

@@ -1,77 +1,56 @@
-# Reproducing the local study
+# Reproducing the completed study
 
-Run commands from this repository root. All model computation and grading run locally on the recorded Apple M1 MacBook Air. See `hardware.md`, `hardware_pilot.md`, `training_protocol.md`, `budget_protocol.md` and `evaluation_protocol.md` for the measured constraints and methodological changes.
+The final benchmark is the separately frozen RunPod FP16/vLLM run: 500 MATH-500 IDs x nine conditions, 4,500 predictions and 4,500 resolved grades. The 1,287 ungraded Mac outputs are excluded. Training finished on the Mac; no second trial, fresh final retraining or optional AIME evaluation was run. The local controller is intentionally stopped and `results/runtime/PAUSE` prevents accidental continuation. Do not run the historical `complete_project.py` workflow to reproduce the final GPU results.
 
-## Environments and inputs
+## Start with saved results (no GPU)
 
-The actual interpreter is CPython 3.13.3, macOS arm64. Separate runtime closures are recorded in `requirements-data-lock.txt`, `requirements-inference-lock.txt`, `requirements-training-lock.txt`, `requirements-mlx-lock.txt`, `requirements-eval-lock.txt` and `requirements-reporting-lock.txt`. The local MLX and grader environments reuse existing system packages without changing them; unrelated global package conflicts are documented, and the relevant closures were checked separately. For a new machine, create separate environments and install the relevant locks; MLX requires Apple silicon. Do not install the original multi-GPU s1 requirements.
+Keep `nlp-runpod-vllm-results (1).zip` in the repository root. Its SHA-256 is `f816d62d7ab56dbbc0da0327469c4b89f0775b35647e221e22d77c64d9edcaee`; the evaluated JSONL SHA-256 is `e392495e76ea56b4505aa82e79c3045a1ee87f18d8edd02a34fb6179ffcd5413`. The ZIP is the complete raw result backup and is intentionally outside Git. The local handoff also contains the original Q4 base, trained MLX adapter, source datasets and evidence needed by the audit. Those assets are not in a source-only clone.
 
-The final experiment requires the MLX/data stack; grading requires the evaluation lock, and analysis also requires the reporting lock. Scripts add `src` to their import path. Use `PYTHONPATH=src` for tests because this Mac sometimes marks editable-install `.pth` files hidden. Model and data preparation commands are in the README; every acquisition uses `configs/sources.json` pins, and existing manifests are verified rather than silently replaced.
-
-The converted base must be produced with `scripts/convert_mlx_base.py` from the verified original checkpoint, not substituted with a third-party quantization. Its provenance records source weight SHA-256, all conversion file checksums, four-bit affine quantization and group size 64. Final adapters are MLX format and require `mlx_runtime.load_local_model` / `mlx_decode.load_decoder` with the supplied FP32 activation wrapper. Generic BF16 loading, PEFT loading and adapter merging are not verified substitutes.
-
-## Running and monitoring
-
-**Current override (2026-11-16):** The user accepted the completed first run for direct evaluation, without any further training. `configs/single_run_decision.json` records this choice, and `scripts/freeze_existing_run.py` adopts its verified 896-example adapter. Its 100 development examples remain held out. `complete_project.py` uses the adopted Stage 6 summary and starts with protocol validation. The old two-trial scheduler is retired; do not restart it. The review PAUSE marker is archived as resolved. The original review request is retained as history, not permission for another trial. Historical training/recovery commands below do not apply to the current inference-only continuation.
-
-Read current status without loading any model:
+On this computer, the recorded `.venv-eval` environment supports:
 
 ```bash
-python3 scripts/status.py
+.venv-eval/bin/python scripts/audit_runpod_archive.py 'nlp-runpod-vllm-results (1).zip' \
+  --expected-evaluated-sha256 e392495e76ea56b4505aa82e79c3045a1ee87f18d8edd02a34fb6179ffcd5413
+MPLCONFIGDIR=tmp/matplotlib .venv-eval/bin/python scripts/finalize_study.py --pdf
+.venv-eval/bin/python scripts/demo_results.py
 ```
 
-The currently active Stage 6 command is:
+For a fresh interpreter, create a separate Python 3.13 environment and install `requirements-eval-lock.txt`, `requirements-reporting-lock.txt` and `requirements-final-report.txt` (these contain the tested local closure; some files use `-e .`, so run from the repository root). Verify package resolution for another platform rather than silently asserting parity. Report generation itself needs no Torch, MLX or CUDA. PDF authoring uses ReportLab; Poppler is used separately for rendered layout verification. Use `PYTHONPATH=src` for unit tests.
+
+The audit verifies archive CRC/paths, pinned code via Git history, source model/adapter inputs, all slots/attempts/grade links, gold answers and complete coverage; it recomputes paired bootstrap intervals and the qualitative selection. It retains small reviewed metadata under `artifacts/remote-results/`. `finalize_study.py` requires this successful audit and known archive hash, streams the evaluated records, adds a post-hoc first-segment/Wait diagnostic, and emits the paper, tables, figures and `docs/final_results.json`. It does not change predictions or train a model.
+
+For independent reanalysis, extract only `results/test/math500-runpod-vllm-v1/evaluated.jsonl` from the ZIP to a new ignored directory, then run:
 
 ```bash
-caffeinate -i .venv-mlx/bin/python scripts/run_development.py --prefix local-study-v1
+MPLBACKEND=Agg .venv-eval/bin/python scripts/analyze_results.py \
+  --input results/reanalysis/evaluated.jsonl --output results/reanalysis/analysis
 ```
 
-Do not start a duplicate while its parent or training worker is alive. The continuation controller has its own process lock, waits for this job, then runs held-out protocol validation, freeze, all 4,500 predictions, grading, analysis and report generation. Its durable status/logs are `results/runtime/project_pipeline.json` and `project_pipeline.log`. A detached native controller can survive closure of the IDE; `caffeinate` prevents idle sleep while the computer remains awake. Closing the lid, shutdown and power loss can still interrupt computation.
+This recalculates tables, the five original figures and 10,000 paired bootstrap samples. Fixed seed 42, full 500-question denominators, no multiple-comparison adjustment. The raw generation summary predates grading and retains `test_scored: false`; the graded JSONL and verified analysis establish completed grading. That historical field is not rewritten.
 
-After checking that no controller is already running, a continuation waiting for an existing training parent uses:
+## Reproduce generation only if desired (paid GPU optional)
+
+The final GPU backend code is pinned to `1cae805a2a29b7ba769838380f2fd71f058fa824`, source asset code to `e4096450228f194e6f39963dbe8bc4dd8be19be8`. Use [the RunPod notebook](../notebooks/runpod_inference.ipynb) and [its detailed guide](runpod_inference.md) in a **separate** Linux/CUDA workspace with the original asset bundle. The notebook handles verification, conversion, smoke, development, freeze, test, grading, analysis and durable ZIP saves. Use the pinned requirements and verify notebook path from the repository if renaming a copy. It is not necessary to repeat GPU generation for this completed project.
+
+Do not overlay the GPU freeze on the Mac project. `manifests/evaluation_freeze.json` in this checkout is the preserved Mac parent freeze. The independent GPU freeze is inside the downloaded result ZIP and the review directory. The GPU launcher requires `VLLM_ISOLATED_WORKSPACE` and its exact bundle/launcher manifests; copying the launcher alone is insufficient. Use the existing bundle builder/notebook route. Keep every newly generated run separate from the final reported one; hardware/library changes can alter greedy tokens and must not overwrite frozen outputs.
+
+The GPU reconstructs the frozen affine Q4 codes/scales/biases into dense FP16 weights; do not replace them with the original dense pretrained model. It transposes all 224 learned matrices into PEFT format and checks the source adapter fingerprint. Original Q4 base: `artifacts/base-mlx4/989aa7980e4cf806f80c7fef2b1adb7bc71aa306-g64/`. Accepted adapter: `artifacts/training/local-study-v1-trial-1/adapter/`. Tensor fingerprint: `70ef5f920cac164fa4a2c35c3b0c670efa812ea393ee9e2def92adac042d5144`. Reconstructed dense weights are omitted from the results ZIP because they are reproducible from these inputs.
+
+## Training provenance and demonstration
+
+Training used original pinned s1K, seed-42 eligibility, complete 896 training rows and 100 held-out development rows; see `configs/single_run_decision.json`, `manifests/training_freeze.json`, `docs/training_protocol.md` and `docs/first_trial_review.md`. Historical two-trial scheduling instructions are superseded by that accepted single-run decision. Do not start a new training run as part of the handoff.
+
+The live illustrative Mac demo is bounded and separate from the benchmark:
 
 ```bash
-caffeinate -i .venv-mlx/bin/python scripts/complete_project.py \
-  --wait-for-stage6 --stage6-pid TRAINING_PARENT_PID --resume-interrupted-stage6
+.venv-mlx/bin/python scripts/demo.py --question 'What is 17 times 23?' \
+  --condition D256 --answer-budget 128 --timeout 90 --output results/demo/live-mac.json
 ```
 
-The PID is the actual `run_development.py` parent, not a copied stale number. If that parent ends, the controller waits for any remaining training worker, validates checkpoint files, retains incomplete files in an archive, and permits one automatic same-recipe interruption recovery. Numerical failures halt with evidence. It does not start a second training worker. An explicit `results/runtime/PAUSE` file prevents automatic progression while waiting; to stop active computation also stop its process group. Remove that marker only when resuming intentionally. The controller is not a reboot service.
+It verifies the original Mac freeze and adapter, uses the native MLX Q4/FP32 backend, and labels the output as illustrative and numerically different from final GPU inference. Metal must be available to the process. A timeout is retained as a demo failure, not silently retried or counted as a benchmark score. `demo_results.py` is CPU-only replay, explicitly not new inference. See `docs/demo_notes.md` for the short presentation and examples.
 
-When no training/controller is active, a direct full continuation is:
+## Local archive and source history
 
-```bash
-caffeinate -i .venv-mlx/bin/python scripts/complete_project.py
-```
+`python3 scripts/package_handoff.py` builds `output/s1-project-handoff.zip` from an explicit allowlist, preserving the verified result archive and original conversion inputs. `docs/handoff.json` lists every included file's SHA-256; the ZIP's own checksum is outside it. Temporary files, environments, credentials, caches and the Git working directory are excluded. Its included `source-history.bundle` allows an offline clone that contains the pinned experiment commits. To use it, clone that bundle into a fresh folder, then copy the handoff's curated working-tree files/assets over the clone; this restores the final downstream report while retaining pinned history for audit.
 
-Completed verified runs are retained. Resume checks reject changed training code, recipe, data or conversion identity. Checkpoints contain adapter and optimizer tensors, exact shuffled cursor, per-example dropout identity and checksums. Last-two retention bounds checkpoint storage. No examples are silently skipped or shortened.
-
-## Reanalysis and delivery
-
-```bash
-.venv-eval/bin/python scripts/grade_results.py --run-id math500-local-v1
-.venv-eval/bin/python scripts/analyze_results.py --run-id math500-local-v1
-.venv-eval/bin/python scripts/report_project.py --run-id math500-local-v1
-```
-
-For portable reanalysis, preserve `evaluated.jsonl` and use `analyze_results.py --input evaluated.jsonl --output results/reanalysis`. For complete provenance also preserve the evaluation freeze and hashed files, training manifests/summaries, eligibility and source manifests, raw attempts/slots, converted-base provenance, exported adapters and relevant locks. Data, weights and raw runs are intentionally outside Git; a source checkout alone does not contain trained weights or scores.
-
-Tests can run during training without loading a second GPU model:
-
-```bash
-PYTHONPATH=src .venv-inference/bin/python -m unittest discover -s tests -v
-PYTHONPATH=src .venv-eval/bin/python -m unittest discover -s tests -p test_grading.py -v
-```
-
-The five native MLX tests require explicit opt-in and were passed separately before full training; do not run them concurrently with the active full model. Plotting tests use synthetic fixtures only. They are not experimental results.
-
-Inspected upstream metadata is recorded in `license_metadata.json`: the pinned Qwen model and original s1K declare Apache-2.0; the inspected MATH-500 metadata does not declare a license. No project release license, redistribution grant, public repository publication or venue submission is assumed. This handoff is a local research draft; review upstream terms before any public release.
-
-## Current protocol revision
-
-The original 45-output native protocol run failed the answer-readout gate. Its 15 bounded diagnostic probes finished; v2 uses a shared `Final Answer: ` label with explicitly logged injected/generated origins. Continue under a fresh identity with:
-
-```bash
-caffeinate -i .venv-mlx/bin/python scripts/complete_project.py --protocol-run-id protocol-dev-v2 --protocol-config budget_protocol_v2.json
-```
-
-The v1 records/config remain unchanged. The command skips training because the adopted Stage 6 summary already selects the existing adapter. MATH-500 remains sealed until the complete v2 native development gate passes. See `protocol_v2.md`.
+The package contains public benchmark/model artifacts for the project team's local handoff, not a new redistribution grant. Review upstream terms before sharing it publicly. Source code and aggregate reports are on GitHub, while weights, raw datasets, full traces and the local handoff are ignored. No project-wide release license has been selected. Inspected Qwen/s1K metadata declare Apache-2.0; inspected MATH-500 metadata does not declare a license. [License metadata](license_metadata.json) records what was actually inspected. There is no venue submission or tagged model release.

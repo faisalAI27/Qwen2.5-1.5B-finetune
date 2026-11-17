@@ -1,0 +1,23 @@
+{
+  "status": "passed",
+  "tests_run": 141,
+  "tests_skipped": 6,
+  "test_failures": 0,
+  "command": "PYTHONPATH=src MPLCONFIGDIR=tmp/matplotlib .venv-eval/bin/python -m unittest discover -s tests -v",
+  "archive_predictions_verified": 4500,
+  "resolved_grades_verified": 4500,
+  "pdf_pages": 8,
+  "all_pdf_pages_rendered_and_visually_inspected": true,
+  "pdf_text_geometry_check_passed": true,
+  "figure_formats_verified": [
+    "PNG",
+    "SVG"
+  ],
+  "live_mac_demo_completed": true,
+  "live_mac_demo_answer": "17 times 23 is 391.",
+  "live_mac_demo_seconds": 8.225491292076185,
+  "saved_replay_rescued_and_spoiled_completed": true,
+  "frozen_experiment_inputs_unchanged": true,
+  "no_new_training_or_benchmark_generation": true,
+  "paper_pdf_sha256": "76045ae725cdea82b734828061378dae53500cf56440d457c226438d5185340c"
+}
